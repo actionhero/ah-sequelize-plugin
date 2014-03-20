@@ -1,0 +1,21 @@
+{
+  "author": "Evan Tahler <evantahler@gmail.com>",
+  "name": "ah-newrelic-plugin",
+  "description": "I use newrelic in actionhero",
+  "version": "0.0.1",
+  "homepage": "http://actionherojs.com",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/evantahler/ah-newrelic-plugin.git"
+  },
+  "keywords": [],
+  "engines": {
+    "node": ">=0.8.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "scripts": {
+    "postinstall": "scripts/postinstall.js"
+  }
+}
