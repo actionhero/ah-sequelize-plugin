@@ -2,7 +2,7 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "ah-sequelize-plugin",
   "description": "I use sequelize in actionhero as an ORM",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -12,7 +12,9 @@
   "engines": {
     "node": ">=0.8.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mkdirp": "^0.3.5"
+  },
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
