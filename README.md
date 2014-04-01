@@ -1,4 +1,4 @@
-ah-sequelize-plugin
+# ah-sequelize-plugin
 
 This pluggin will use the sequelize orm to create `api.models` which contain your sequelize models
 
