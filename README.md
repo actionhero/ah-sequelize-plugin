@@ -11,7 +11,7 @@ This pluggin will use the sequelize orm to create `api.models` which contain you
 
 A `./config/sequelize.json` file will be created which will store your database configuration
 
-## Models
+## [Models](http://sequelizejs.com/docs/latest/models)
 
 Use the exports form of sequelize models in `./models` with the file name matching that of the model, IE:
 
