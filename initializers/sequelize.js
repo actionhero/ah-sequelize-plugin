@@ -8,6 +8,23 @@ exports.sequelize = function(api, next){
 
   api.sequelize = {
     _start: function(api, next){
+      next();
+    },
+
+    _teardown: function(api, next){
+      next();
+    },
+
+    migrate: function(next){
+      var migrator = api.sequelize.sequelize.getMigrator({
+        path: api.project_root + '/migrations',
+      });
+      migrator.migrate.success(function() {
+        if(typeof next === 'function'){ next(); }
+      })
+    },
+
+    connect: function(next){
       var self = this;
 
       api.sequelize.sequelize = new Sequelize(
@@ -26,7 +43,6 @@ exports.sequelize = function(api, next){
       
       if(api.env === "test"){  
         var SequelizeFixtures = require('sequelize-fixtures');
-
         SequelizeFixtures.loadFile(api.project_root + '/test/fixtures/*.json', api.models, function(){
           SequelizeFixtures.loadFile(api.project_root + '/test/fixtures/*.yml', api.models, function(){
             self.test(next);
@@ -35,20 +51,7 @@ exports.sequelize = function(api, next){
       }else{
         self.test(next);
       }
-    },
-
-    _teardown: function(api, next){
-      next();
-    },
-
-    migrate: function(next){
-      var migrator = api.sequelize.sequelize.getMigrator({
-        path: api.project_root + '/migrations',
-      });
-      migrator.migrate.success(function() {
-        if(typeof next === 'function'){ next(); }
-      })
-    },
+    }
 
     test: function(next){
       // ensure the connection with a test
@@ -63,5 +66,10 @@ exports.sequelize = function(api, next){
 
   }
 
-  next();
+  api.sequelize.connect(function(){
+    // api.sequelize.migrate(function(){
+      next();
+    // });
+  });
+  
 }
