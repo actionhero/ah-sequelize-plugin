@@ -17,11 +17,11 @@ exports.sequelize = function(api, next){
 
     migrate: function(next){
       var migrator = api.sequelize.sequelize.getMigrator({
-        path: api.project_root + '/migrations',
+        path: api.project_root + '/migrations'
       });
-      migrator.migrate.success(function() {
-        if(typeof next === 'function'){ next(); }
-      })
+      migrator.migrate({ method: 'up' }).success(function() {
+        next();
+      });
     },
 
     connect: function(next){
@@ -51,7 +51,7 @@ exports.sequelize = function(api, next){
       }else{
         self.test(next);
       }
-    }
+    },
 
     test: function(next){
       // ensure the connection with a test
