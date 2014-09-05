@@ -15,13 +15,24 @@ exports.sequelize = function(api, next){
       next();
     },
 
-    migrate: function(next){
+    migrate: function(opts, next){
+      if(typeof opts === "function"){
+        next = opts;
+        opts = null;
+      }
+      opts = opts === null ? { method: 'up' } : opts;
+
       var migrator = api.sequelize.sequelize.getMigrator({
         path: api.project_root + '/migrations'
       });
-      migrator.migrate({ method: 'up' }).success(function() {
+
+      migrator.migrate(opts).success(function() {
         next();
       });
+    },
+
+    migrateUndo: function(next) {
+      this.migrate({ method: 'down' }, next);
     },
 
     connect: function(next){
