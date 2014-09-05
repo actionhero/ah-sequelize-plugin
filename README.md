@@ -29,13 +29,27 @@ module.exports = function(sequelize, DataTypes) {
 
 This pluggin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrationss` and run `api.sequelize.migrate()`.
 
-You can add a migration grunt helper to your actionhero project by adding the below to your `gruntfile.js`:
+You can use the [sequelize-cli](http://sequelizejs.com/docs/latest/migrations#cli) for more utilities or
+you can add a migration grunt helper(s) to your actionhero project by adding the below to your `gruntfile.js`:
 
 ```javascript
 grunt.registerTask('migrate','run any pending database migrations',function(file){
   var done = this.async();
   init(function(api){
     api.sequelize.migrate(function(){
+      done();
+    })
+  })
+})
+```
+
+To migrate down also add the following:
+
+```javascript
+grunt.registerTask('migrate:undo','revert and run the “down” action on the last run migration',function(file){
+  var done = this.async();
+  init(function(api){
+    api.sequelize.migrateUndo(function(){
       done();
     })
   })
