@@ -25,6 +25,8 @@ module.exports = function(sequelize, DataTypes) {
 }
 ```
 
+Models are loaded into `api.models`, so the example above would be `api.models.Project`.
+
 ## [Migrations](http://sequelizejs.com/docs/latest/migrations)
 
 This pluggin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrationss` and run `api.sequelize.migrate()`.
@@ -55,6 +57,8 @@ grunt.registerTask('migrate:undo','revert and run the “down” action on the l
   })
 })
 ```
+
+If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.sync()`;
 
 ## [Associations](http://sequelizejs.com/docs/latest/associations)
 
