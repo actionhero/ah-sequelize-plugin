@@ -43,20 +43,13 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true
       },
-
       name: DataTypes.STRING,
       email: DataTypes.STRING,
       phone: DataTypes.STRING,
       passwordHash: DataTypes.TEXT,
       passwordSalt: DataTypes.TEXT,
-
-      createdAt: {
-        type: DataTypes.DATE
-      },
-
-      updatedAt: {
-        type: DataTypes.DATE
-      }
+      createdAt: DataTypes.DATE
+      updatedAt: DataTypes.DATE
     }).complete(function(){
 
     migration.addIndex('users', ['email'], {
