@@ -31,6 +31,63 @@ Models are loaded into `api.models`, so the example above would be `api.models.P
 
 This pluggin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrationss` and run `api.sequelize.migrate()`.
 
+An example migration to create a `users` table would look like:
+```javascript 
+// from ./migrations/20140101000001-create-users.js
+
+module.exports = {
+  up: function(migration, DataTypes, done) {
+    migration.createTable('users', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+
+      name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      phone: DataTypes.STRING,
+      passwordHash: DataTypes.TEXT,
+      passwordSalt: DataTypes.TEXT,
+
+      createdAt: {
+        type: DataTypes.DATE
+      },
+
+      updatedAt: {
+        type: DataTypes.DATE
+      }
+    }).complete(function(){
+
+    migration.addIndex('users', ['email'], {
+      indexName: 'email_index',
+      indicesType: 'UNIQUE'
+    }).complete(function(){
+
+    migration.addIndex('users', ['name'], {
+      indexName: 'name_index',
+      indicesType: 'UNIQUE'
+    }).complete(function(){
+
+    migration.addIndex('users', ['phone'], {
+      indexName: 'phone_index',
+      indicesType: 'UNIQUE'
+    }).complete(function(){
+
+      done();
+
+    });
+    });
+    });
+    });
+  },
+ 
+  down: function(migration, DataTypes, done) {
+    migration.dropTable('users').complete(done);
+  }
+}
+```
+
 You can use the [sequelize-cli](http://sequelizejs.com/docs/latest/migrations#cli) for more utilities or
 you can add a migration grunt helper(s) to your actionhero project by adding the below to your `gruntfile.js`:
 
