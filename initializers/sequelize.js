@@ -3,7 +3,8 @@ var fs                = require('fs');
 var Sequelize         = require('sequelize');
 
 exports.sequelize = function(api, next){
-  
+
+    //I wonder if we need to change this part at all. Find and Create actions on the sequelize model work just fine.
   api.models = {};
 
   api.sequelize = {
@@ -73,7 +74,7 @@ exports.sequelize = function(api, next){
         console.log(err);
         process.exit();
       });
-    },
+    }
 
   }
 
