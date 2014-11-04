@@ -23,7 +23,7 @@ exports.sequelize = function(api, next){
       opts = opts === null ? { method: 'up' } : opts;
 
       var migrator = api.sequelize.sequelize.getMigrator({
-        path: api.project_root + '/migrations'
+        path: api.projectRoot + '/migrations'
       });
 
       migrator.migrate(opts).success(function() {
@@ -45,7 +45,7 @@ exports.sequelize = function(api, next){
         api.config.sequelize
       );
 
-      var dir = path.normalize(api.project_root + '/models');
+      var dir = path.normalize(api.projectRoot + '/models');
       fs.readdirSync(dir).forEach(function(file){
         var nameParts = file.split("/");
         var name = nameParts[(nameParts.length - 1)].split(".")[0];
@@ -54,8 +54,8 @@ exports.sequelize = function(api, next){
       
       if(api.env === "test"){  
         var SequelizeFixtures = require('sequelize-fixtures');
-        SequelizeFixtures.loadFile(api.project_root + '/test/fixtures/*.json', api.models, function(){
-          SequelizeFixtures.loadFile(api.project_root + '/test/fixtures/*.yml', api.models, function(){
+        SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.json', api.models, function(){
+          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.yml', api.models, function(){
             self.test(next);
           });
         });
