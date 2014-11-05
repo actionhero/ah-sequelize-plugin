@@ -1,7 +1,7 @@
 exports.default = { 
   sequelize: function(api){
     return {
-      "database"    : "DEVELOPMNET_DB",
+      "database"    : "DEVELOPMENT_DB",
       "dialect"     : "mysql",
       "port"        : 3306,
       "host"        : "127.0.0.1", 
