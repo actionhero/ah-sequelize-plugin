@@ -66,10 +66,14 @@ module.exports = {
       },
 
     };
+
+    next();
   },
 
   startPriority: 1001, // the lowest post-core middleware priority
   start: function(api, next){
-
+    api.sequelize.connect(function(){
+      next();
+    });
   }
 };
