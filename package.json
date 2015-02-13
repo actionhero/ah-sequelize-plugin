@@ -2,13 +2,21 @@
   "author": "Evan Tahler <evantahler@gmail.com>",
   "name": "ah-sequelize-plugin",
   "description": "I use sequelize in actionhero as an ORM",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
     "url": "git://github.com/evantahler/ah-sequelize-plugin.git"
   },
-  "keywords": ["actionhero", "ah", "sequelie", "database", "api", "mysql", "postgres"],
+  "keywords": [
+    "actionhero",
+    "ah",
+    "sequelie",
+    "database",
+    "api",
+    "mysql",
+    "postgres"
+  ],
   "engines": {
     "node": ">=0.8.0"
   },
