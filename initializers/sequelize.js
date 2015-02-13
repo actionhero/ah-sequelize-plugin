@@ -19,7 +19,7 @@ module.exports = {
           path: api.projectRoot + '/migrations'
         });
 
-        migrator.migrate(opts).success(function() {
+        migrator.migrate(opts).then(function() {
           next();
         });
       },
@@ -56,9 +56,9 @@ module.exports = {
       },
 
       test: function(next){
-        api.sequelize.sequelize.query("SELECT NOW()").success(function(){
+        api.sequelize.sequelize.query("SELECT NOW()").then(function(){
           next();
-        }).failure(function(err){
+        }).catch(function(err){
           api.log(err, 'warning');
           console.log(err);
           process.exit();
