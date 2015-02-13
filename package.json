@@ -11,8 +11,9 @@
   "keywords": [
     "actionhero",
     "ah",
-    "sequelie",
+    "sequelize",
     "database",
+    "db",
     "api",
     "mysql",
     "postgres"
