@@ -5,7 +5,7 @@ This pluggin will use the sequelize orm to create `api.models` which contain you
 ## Setup
 
 - install this plugin: `npm install ah-sequelize-plugin --save`
-- be sure to enable the pluggin within actionhero (`config/api.js`)
+- be sure to enable the pluggin within actionhero (`config/plugins.js`)
 - you will need to add the sequelize package (`npm install sequelize --save`) to your package.json
 - you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
 - you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
