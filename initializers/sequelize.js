@@ -58,25 +58,15 @@ module.exports = {
       // api.sequelize.test([exitOnError=true], next);
       // Checks to see if mysql can be reached by selecting the current time
       // Arguments:
-      //  - exitOnError (optional, default=true): If true, and mysql cannot be reached, actionhero will quit
-      //  - next (callback function()): Will be called after the test, unless exitOnError is true and mysql cannot be reached
-      //      in this case, actionhero will quit and the callback will not be called.
-      test: function(exitOnError, next){
-        if(typeof exitOnError == "function") {
-          next = exitOnError;
-          exitOnError = true;
-        }
-
+      //  - next (callback function(err)): Will be called after the test is complete
+      //      If the test fails, the `err` argument will contain the error
+      test: function(next){
         api.sequelize.sequelize.query("SELECT NOW()").then(function(){
           next();
         }).catch(function(err){
           api.log(err, 'warning');
           console.log(err);
-          if(exitOnError) {
-            process.exit();
-          } else {
-            next();
-          }
+          next(err);
         });
       },
 
@@ -87,8 +77,8 @@ module.exports = {
 
   startPriority: 1001, // the lowest post-core middleware priority
   start: function(api, next){
-    api.sequelize.connect(function(){
-      next();
+    api.sequelize.connect(function(err){
+      next(err);
     });
   }
 };
