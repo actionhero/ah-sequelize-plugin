@@ -30,9 +30,9 @@ module.exports = {
 
       connect: function(next){
         api.sequelize.sequelize = new Sequelize(
-          api.config.sequelize.database, 
-          api.config.sequelize.username, 
-          api.config.sequelize.password, 
+          api.config.sequelize.database,
+          api.config.sequelize.username,
+          api.config.sequelize.password,
           api.config.sequelize
         );
 
@@ -42,8 +42,8 @@ module.exports = {
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           api.models[name] = api.sequelize.sequelize.import(dir + '/' + file);
         });
-        
-        if(api.env === "test"){  
+
+        if(api.env === "test"){
           var SequelizeFixtures = require('sequelize-fixtures');
           SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.json', api.models, function(){
             SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.yml', api.models, function(){
@@ -55,13 +55,28 @@ module.exports = {
         }
       },
 
-      test: function(next){
+      // api.sequelize.test([exitOnError=true], next);
+      // Checks to see if mysql can be reached by selecting the current time
+      // Arguments:
+      //  - exitOnError (optional, default=true): If true, and mysql cannot be reached, actionhero will quit
+      //  - next (callback function()): Will be called after the test, unless exitOnError is true and mysql cannot be reached
+      //      in this case, actionhero will quit and the callback will not be called.
+      test: function(exitOnError, next){
+        if(typeof exitOnError == "function") {
+          next = exitOnError;
+          exitOnError = true;
+        }
+
         api.sequelize.sequelize.query("SELECT NOW()").then(function(){
           next();
         }).catch(function(err){
           api.log(err, 'warning');
           console.log(err);
-          process.exit();
+          if(exitOnError) {
+            process.exit();
+          } else {
+            next();
+          }
         });
       },
 
