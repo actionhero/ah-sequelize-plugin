@@ -30,9 +30,9 @@ module.exports = {
 
       connect: function(next){
         api.sequelize.sequelize = new Sequelize(
-          api.config.sequelize.database, 
-          api.config.sequelize.username, 
-          api.config.sequelize.password, 
+          api.config.sequelize.database,
+          api.config.sequelize.username,
+          api.config.sequelize.password,
           api.config.sequelize
         );
 
@@ -42,8 +42,8 @@ module.exports = {
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           api.models[name] = api.sequelize.sequelize.import(dir + '/' + file);
         });
-        
-        if(api.env === "test"){  
+
+        if(api.env === "test"){
           var SequelizeFixtures = require('sequelize-fixtures');
           SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.json', api.models, function(){
             SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.yml', api.models, function(){
@@ -55,13 +55,18 @@ module.exports = {
         }
       },
 
+      // api.sequelize.test([exitOnError=true], next);
+      // Checks to see if mysql can be reached by selecting the current time
+      // Arguments:
+      //  - next (callback function(err)): Will be called after the test is complete
+      //      If the test fails, the `err` argument will contain the error
       test: function(next){
         api.sequelize.sequelize.query("SELECT NOW()").then(function(){
           next();
         }).catch(function(err){
           api.log(err, 'warning');
           console.log(err);
-          process.exit();
+          next(err);
         });
       },
 
@@ -72,8 +77,8 @@ module.exports = {
 
   startPriority: 1001, // the lowest post-core middleware priority
   start: function(api, next){
-    api.sequelize.connect(function(){
-      next();
+    api.sequelize.connect(function(err){
+      next(err);
     });
   }
 };
