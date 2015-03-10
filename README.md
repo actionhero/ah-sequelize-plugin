@@ -9,6 +9,7 @@ This pluggin will use the sequelize orm to create `api.models` which contain you
 - you will need to add the sequelize package (`npm install sequelize --save`) to your package.json
 - you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
 - you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
+  - there are many options you can pass to sequelize.  You can learn more here: http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html
 
 A `./config/sequelize.json` file will be created which will store your database configuration
 
