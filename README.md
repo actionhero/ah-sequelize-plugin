@@ -13,7 +13,7 @@ This pluggin will use the sequelize orm to create `api.models` which contain you
 
 A `./config/sequelize.json` file will be created which will store your database configuration
 
-## [Models](http://sequelizejs.com/docs/latest/models)
+## [Models](http://docs.sequelizejs.com/en/latest/api/models)
 
 Use the exports form of sequelize models in `./models` with the file name matching that of the model, IE:
 
@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
 
 Models are loaded into `api.models`, so the example above would be `api.models.Project`.
 
-## [Migrations](http://sequelizejs.com/docs/latest/migrations)
+## [Migrations](http://docs.sequelizejs.com/en/latest/api/migrations)
 
 This pluggin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrationss` and run `api.sequelize.migrate()`.
 
@@ -82,7 +82,7 @@ module.exports = {
 }
 ```
 
-You can use the [sequelize-cli](http://sequelizejs.com/docs/latest/migrations#cli) for more utilities or
+You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/api/migrations#cli) for more utilities or
 you can add a migration grunt helper(s) to your actionhero project by adding the below to your `gruntfile.js`:
 
 ```javascript
@@ -111,7 +111,7 @@ grunt.registerTask('migrate:undo','revert and run the “down” action on the l
 
 If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.sync()`;
 
-## [Associations](http://sequelizejs.com/docs/latest/associations)
+## [Associations](http://docs.sequelizejs.com/en/latest/api/associations)
 
 If you want to declare associations, best practice has you create an `associations` initializer within your project which might look like this:
 
