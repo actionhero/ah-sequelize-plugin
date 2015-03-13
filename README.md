@@ -10,7 +10,7 @@ This plugin will use the sequelize orm to create `api.models` which contain your
 - you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
 - you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
   - there are many options you can pass to sequelize.  You can learn more here: http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html
-- you will need to add the sequelize-cli package (`npm install sequelize-cli --save-dev`) to the `"devDependencies"` of your package.json
+- you will need to add the sequelize-cli package (`npm install sequelize-cli`) to your package.json
   - you could install it globally instead (`npm install -g sequelize-cli`)
 
 A `./config/sequelize.json` file will be created which will store your database configuration
