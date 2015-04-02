@@ -1,0 +1,5 @@
+// only used for sequelize CLI
+
+module.exports = {
+"config": "./config/sequelize.js"
+};
