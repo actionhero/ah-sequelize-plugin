@@ -7,6 +7,9 @@ var mkdirp = require('mkdirp');
 var localConfigFile   = path.normalize(__dirname + '/../config/sequelize.js');
 var projectConfigFile = path.normalize(process.cwd() + '/../../config/sequelize.js');
 
+var localJsonConfigFile   = path.normalize(__dirname + '/../config/sequelize.json');
+var projectJsonConfigFile = path.normalize(process.cwd() + '/../../config/sequelize.json');
+
 var localRcFile   = path.normalize(__dirname + '/../config/.sequelizerc');
 var projectRcFile = path.normalize(process.cwd() + '/../../.sequelizerc');
 
@@ -16,13 +19,21 @@ try {
   //unable to stat file because it doesn't exist
   console.log("copying " + localConfigFile + " to " + projectConfigFile);
   fs.createReadStream(localConfigFile).pipe(fs.createWriteStream(projectConfigFile));
-}
 
-try {
-  fs.lstatSync(projectRcFile);
-} catch (ex) {
-  console.log("copying " + localRcFile + " to " + projectRcFile + " for ");
-  fs.createReadStream(localRcFile).pipe(fs.createWriteStream(projectRcFile));
+    // Only try to copy the files required for cli operations if sequelize.js is being newly created.
+    try {
+        fs.lstatSync(projectRcFile);
+    } catch (ex) {
+        console.log("copying " + localRcFile + " to " + projectRcFile + " for ");
+        fs.createReadStream(localRcFile).pipe(fs.createWriteStream(projectRcFile));
+    }
+
+    try {
+        fs.lstatSync(projectJsonConfigFile);
+    } catch (ex) {
+        console.log("copying " + localJsonConfigFile + " to " + projectJsonConfigFile + " for ");
+        fs.createReadStream(localJsonConfigFile).pipe(fs.createWriteStream(projectJsonConfigFile));
+    }
 }
 
 ['models', 'test/fixtures'].forEach(function(f){
