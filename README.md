@@ -113,25 +113,32 @@ If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.syn
 
 ## [Associations](http://docs.sequelizejs.com/en/latest/api/associations)
 
-If you want to declare associations, best practice has you create an `associations` initializer within your project which might look like this:
+If you want to declare associations, best practice has you create an `associations.js` initializer within your project which might look like this:
 
 ```javascript
-exports.associations = function(api, next){
+module.exports = {
+    loadPriority: 1000,
+    startPriority: 1002, // priority has to be after models have been loaded
+    stopPriority: 1000,
 
-  api.associations = {};
+    associations: {},
 
-  api.associations._start = function(api, next){
-    api.models.user.hasMany(api.models.posts);
-    api.models.posts.hasMany(api.models.comments);
+    initialize: function (api, next) {
+        next();
+    },
+    start: function (api, next) {
+        api.models.user.hasMany(api.models.posts);
+        api.models.posts.hasMany(api.models.comments);
 
-    api.models.comments.belongsTo(api.models.posts);
-    api.models.posts.belongsTo(api.models.user);
+        api.models.comments.belongsTo(api.models.posts);
+        api.models.posts.belongsTo(api.models.user);
 
-    next();
-  };
-
-  next();
-}
+        next();
+    },
+    stop: function (api, next) {
+        next();
+    }
+};
 ```
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
