@@ -16,13 +16,14 @@ try {
   //unable to stat file because it doesn't exist
   console.log("copying " + localConfigFile + " to " + projectConfigFile);
   fs.createReadStream(localConfigFile).pipe(fs.createWriteStream(projectConfigFile));
-}
 
-try {
-  fs.lstatSync(projectRcFile);
-} catch (ex) {
-  console.log("copying " + localRcFile + " to " + projectRcFile + " for ");
-  fs.createReadStream(localRcFile).pipe(fs.createWriteStream(projectRcFile));
+  // Only try to copy the files required for cli operations if sequelize.js is being newly created.
+  try {
+       fs.lstatSync(projectRcFile);
+  } catch (ex) {
+      console.log("copying " + localRcFile + " to " + projectRcFile + " for ");
+      fs.createReadStream(localRcFile).pipe(fs.createWriteStream(projectRcFile));
+  }
 }
 
 ['models', 'test/fixtures'].forEach(function(f){
