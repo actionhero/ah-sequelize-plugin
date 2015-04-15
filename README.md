@@ -111,6 +111,8 @@ grunt.registerTask('migrate:undo','revert and run the “down” action on the l
 
 If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.sync()`;
 
+By default, `ah-sequelize-plugin` will automatically execute any pending migrations when Actionhero starts up. You can disable this behaviour by adding `autoMigrate: false` to your sequelize config.
+
 ## [Associations](http://docs.sequelizejs.com/en/latest/api/associations)
 
 If you want to declare associations, best practice has you create an `associations.js` initializer within your project which might look like this:

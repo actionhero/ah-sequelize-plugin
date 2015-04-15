@@ -1,6 +1,7 @@
 exports.default = {
     sequelize: function(api){
         return {
+            "autoMigrate" : true,
             "database"    : "DEVELOPMENT_DB",
             "dialect"     : "mysql",
             "port"        : 3306,
