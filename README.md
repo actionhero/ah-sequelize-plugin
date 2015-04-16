@@ -1,15 +1,17 @@
 # ah-sequelize-plugin
 
-This pluggin will use the sequelize orm to create `api.models` which contain your sequelize models
+This plugin will use the sequelize orm to create `api.models` which contain your sequelize models
 
 ## Setup
 
 - install this plugin: `npm install ah-sequelize-plugin --save`
-- be sure to enable the pluggin within actionhero (`config/plugins.js`)
+- be sure to enable the plugin within actionhero (`config/plugins.js`)
 - you will need to add the sequelize package (`npm install sequelize --save`) to your package.json
 - you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
 - you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
   - there are many options you can pass to sequelize.  You can learn more here: http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html
+- you will need to add the sequelize-cli package (`npm install sequelize-cli`) to your package.json
+  - you could install it globally instead (`npm install -g sequelize-cli`)
 
 A `./config/sequelize.js` file will be created which will store your database configuration
 
@@ -30,7 +32,7 @@ Models are loaded into `api.models`, so the example above would be `api.models.P
 
 ## [Migrations](http://docs.sequelizejs.com/en/latest/api/migrations)
 
-This pluggin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrationss` and run `api.sequelize.migrate()`.
+This plugin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrations` and use the [sequelize-cli](https://github.com/sequelize/cli) to execute them.
 
 An example migration to create a `users` table would look like:
 ```javascript 
@@ -82,32 +84,9 @@ module.exports = {
 }
 ```
 
-You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/api/migrations#cli) for more utilities or
-you can add a migration grunt helper(s) to your actionhero project by adding the below to your `gruntfile.js`:
-
-```javascript
-grunt.registerTask('migrate','run any pending database migrations',function(file){
-  var done = this.async();
-  init(function(api){
-    api.sequelize.migrate(function(){
-      done();
-    })
-  })
-})
-```
-
-To migrate down also add the following:
-
-```javascript
-grunt.registerTask('migrate:undo','revert and run the “down” action on the last run migration',function(file){
-  var done = this.async();
-  init(function(api){
-    api.sequelize.migrateUndo(function(){
-      done();
-    })
-  })
-})
-```
+You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/docs/migrations/) to create and execute migrations. 
+Using the `migrator` class on `api.sequelize` is [deprecated](https://github.com/sequelize/sequelize/issues/3301#issuecomment-77935976), as Sequelize 
+now recommends using [Umzug](https://github.com/sequelize/umzug) to manage database schemas.
 
 If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.sync()`;
 
@@ -143,4 +122,4 @@ module.exports = {
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
 
-We use the `sequelize-fixtures` package to load in JSON-defined fixtures in the test NODE_ENV.  Store your fixtures in `./test/fixtures/*.json` or `./test/fixtures/*.yml`
+We use the `sequelize-fixtures` package to load in JSON-defined fixtures in the test NODE\_ENV.  Store your fixtures in `./test/fixtures/*.json` or `./test/fixtures/*.yml`
