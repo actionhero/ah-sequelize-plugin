@@ -33,6 +33,7 @@ function merge(overlayFn) {
 // exports.production = {
 //   sequelize: function(api){
 //     return {
+//       "autoMigrate" : false,
 //       "logging"     : false,
 //       "database"    : "PRODUCTION_DB",
 //       "dialect"     : "mysql",
