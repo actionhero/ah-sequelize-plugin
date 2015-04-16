@@ -1,6 +1,7 @@
 exports.default = {
     sequelize: function(api){
         return {
+            "autoMigrate" : true,
             "database"    : "DEVELOPMENT_DB",
             "dialect"     : "mysql",
             "port"        : 3306,
@@ -32,6 +33,7 @@ function merge(overlayFn) {
 // exports.production = {
 //   sequelize: function(api){
 //     return {
+//       "autoMigrate" : false,
 //       "logging"     : false,
 //       "database"    : "PRODUCTION_DB",
 //       "dialect"     : "mysql",
