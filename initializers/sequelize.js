@@ -45,10 +45,8 @@ module.exports = {
 
         if(api.env === "test"){
           var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.json', api.models, function(){
-            SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.yml', api.models, function(){
-              api.sequelize.test(next);
-            });
+          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function(){
+            api.sequelize.test(next);
           });
         }else{
           api.sequelize.test(next);
