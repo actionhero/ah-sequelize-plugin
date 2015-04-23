@@ -47,7 +47,7 @@ module.exports = {
       },
 
       loadFixtures: function(next) {
-          if(api.config.sequelize.loadFixtures) {
+          if(api.config.sequelize.loadFixtures == null || api.config.sequelize.loadFixtures) {
             var SequelizeFixtures = require('sequelize-fixtures');
             SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function () {
               next();
@@ -58,7 +58,7 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate) {
+        if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
             api.sequelize.migrate({method: 'up'}, function () {
               next();
             });
