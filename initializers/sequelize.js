@@ -68,8 +68,7 @@ module.exports = {
           console.log(err);
           next(err);
         });
-      },
-
+      }
     };
 
     next();
@@ -83,7 +82,7 @@ module.exports = {
       }
 
       if(api.config.sequelize.autoMigrate) {
-        this.migrate({method: 'up'}, next)
+        api.sequelize.migrate({method: 'up'}, next)
       } else {
         next(err);
       }
