@@ -124,4 +124,6 @@ module.exports = {
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
 
-We use the `sequelize-fixtures` package to load in JSON-defined fixtures in the test NODE\_ENV.  Store your fixtures in `./test/fixtures/*.json` or `./test/fixtures/*.yml`
+We use the `sequelize-fixtures` package to load in JSON-defined fixtures in the test NODE\_ENV.  Store your fixtures in `./test/fixtures/*.json` or `./test/fixtures/*.yml`.
+
+By default, `ah-sequelize-plugin` will **not** automatically load your fixtures when Actionhero starts up. You can enable this behaviour by adding `loadFixtures: true` to your sequelize config.

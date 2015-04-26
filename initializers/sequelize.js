@@ -43,15 +43,27 @@ module.exports = {
           api.models[name] = api.sequelize.sequelize.import(dir + '/' + file);
         });
 
-        if(api.env === "test"){
-          var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.json', api.models, function(){
-            SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.yml', api.models, function(){
-              api.sequelize.test(next);
+        api.sequelize.test(next);
+      },
+
+      loadFixtures: function(next) {
+          if(api.config.sequelize.loadFixtures) {
+            var SequelizeFixtures = require('sequelize-fixtures');
+            SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function () {
+              next();
             });
-          });
-        }else{
-          api.sequelize.test(next);
+          } else {
+            next();
+          }
+      },
+
+      autoMigrate: function(next) {
+        if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
+            api.sequelize.migrate({method: 'up'}, function () {
+              next();
+            });
+        } else {
+            next();
         }
       },
 
@@ -81,11 +93,9 @@ module.exports = {
         return next(err);
       }
 
-      if(api.config.sequelize.autoMigrate) {
-        api.sequelize.migrate({method: 'up'}, next)
-      } else {
-        next(err);
-      }
+      api.sequelize.autoMigrate(function() {
+          api.sequelize.loadFixtures(next);
+      });
     });
   }
 };
