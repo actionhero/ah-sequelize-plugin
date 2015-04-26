@@ -2,7 +2,7 @@ exports.default = {
     sequelize: function(api){
         return {
             "autoMigrate" : true,
-            "loadFixtures": true,
+            "loadFixtures": false,
             "database"    : "DEVELOPMENT_DB",
             "dialect"     : "mysql",
             "port"        : 3306,
