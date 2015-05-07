@@ -1,10 +1,15 @@
 var path              = require('path');
 var fs                = require('fs');
 var Sequelize         = require('sequelize');
+var Umzug             = require('umzug');
 
 module.exports = {
   initialize: function(api, next){
     api.models = {};
+
+      var umzugCfg = {
+          path: api.projectRoot + '/migrations'
+      };
 
     api.sequelize = {
 
@@ -15,17 +20,11 @@ module.exports = {
         }
         opts = opts === null ? { method: 'up' } : opts;
 
-        var migrator = api.sequelize.sequelize.getMigrator({
-          path: api.projectRoot + '/migrations'
-        });
-
-        migrator.migrate(opts).then(function() {
-          next();
-        });
+          new Umzug(umzugCfg).execute(opts).then(next());
       },
 
       migrateUndo: function(next) {
-        this.migrate({ method: 'down' }, next);
+          new Umzug(umzugCfg).down().then(next());
       },
 
       connect: function(next){
@@ -59,9 +58,7 @@ module.exports = {
 
       autoMigrate: function(next) {
         if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
-            api.sequelize.migrate({method: 'up'}, function () {
-              next();
-            });
+            new Umzug(umzugCfg).up().then(next());
         } else {
             next();
         }
