@@ -31,6 +31,8 @@ module.exports = {
 
         sequelize: sequelizeInstance,
 
+        umzug: umzug,
+
       migrate: function(opts, next){
         if(typeof opts === "function"){
           next = opts;

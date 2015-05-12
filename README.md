@@ -38,57 +38,57 @@ An example migration to create a `users` table would look like:
 ```javascript 
 // from ./migrations/20140101000001-create-users.js
 
+var Promise = require('bluebird');
+
 module.exports = {
-  up: function(migration, DataTypes, done) {
-    migration.createTable('users', {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: DataTypes.STRING,
-      email: DataTypes.STRING,
-      phone: DataTypes.STRING,
-      passwordHash: DataTypes.TEXT,
-      passwordSalt: DataTypes.TEXT,
-      createdAt: DataTypes.DATE
-      updatedAt: DataTypes.DATE
-    }).complete(function(){
-
-    migration.addIndex('users', ['email'], {
-      indexName: 'email_index',
-      indicesType: 'UNIQUE'
-    }).complete(function(){
-
-    migration.addIndex('users', ['name'], {
-      indexName: 'name_index',
-      indicesType: 'UNIQUE'
-    }).complete(function(){
-
-    migration.addIndex('users', ['phone'], {
-      indexName: 'phone_index',
-      indicesType: 'UNIQUE'
-    }).complete(function(){
-
-      done();
-
-    });
-    });
-    });
+  up: function(migration, DataTypes) {
+    return Promise.all([
+      migration.createTable('users', {
+        id: {
+          type: DataTypes.INTEGER,
+          primaryKey: true,
+          autoIncrement: true
+        },
+        name: DataTypes.STRING,
+        email: DataTypes.STRING,
+        phone: DataTypes.STRING,
+        passwordHash: DataTypes.TEXT,
+        passwordSalt: DataTypes.TEXT,
+        createdAt: DataTypes.DATE
+        updatedAt: DataTypes.DATE
+      })
+    ]).then(function(){
+      return Promise.all([
+        migration.addIndex('users', ['email'], {
+          indexName: 'email_index',
+          indicesType: 'UNIQUE'
+        }),
+        migration.addIndex('users', ['name'], {
+          indexName: 'name_index',
+          indicesType: 'UNIQUE'
+        }),
+        migration.addIndex('users', ['phone'], {
+          indexName: 'phone_index',
+          indicesType: 'UNIQUE'
+        })
+      ]);
     });
   },
  
-  down: function(migration, DataTypes, done) {
-    migration.dropTable('users').complete(done);
+  down: function(migration, DataTypes) {
+    return Promise.all([
+      migration.dropTable('users')
+    ]);
   }
 }
 ```
 
 You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/docs/migrations/) to create and execute migrations. 
-Using the `migrator` class on `api.sequelize` is [deprecated](https://github.com/sequelize/sequelize/issues/3301#issuecomment-77935976), as Sequelize 
-now recommends using [Umzug](https://github.com/sequelize/umzug) to manage database schemas.
 
-If you want to sync, you can `api.sequelize.sync()` or `api.models.yourModel.sync()`;
+`api.sequelize.migrate` and `api.sequelize.migrateUndo` are now based on [Umzug](https://github.com/sequelize/umzug), and are maintained for legacy purposes.
+An Umzug instance is available at `api.sequelize.umzug`, and should be used to perform (and undo) migrations programatically using the [official API](https://github.com/sequelize/umzug#api).
+
+If you want to sync, you can `api.sequelize.sequelize.sync()` or `api.models.yourModel.sync()`;
 
 By default, `ah-sequelize-plugin` will automatically execute any pending migrations when Actionhero starts up. You can disable this behaviour by adding `autoMigrate: false` to your sequelize config.
 
