@@ -42,7 +42,9 @@ module.exports = {
       },
 
       migrateUndo: function(next) {
-          umzug.down().then(next());
+          umzug.down().then(function() {
+              next();
+          });
       },
 
       connect: function(next){
