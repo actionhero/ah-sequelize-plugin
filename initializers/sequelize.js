@@ -75,9 +75,7 @@ module.exports = {
         if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
             migrateSequelizeMeta(api, umzug)
                 .then(function() {
-                    return umzug.up().then(function() {
-                        return;
-                    });
+                    return umzug.up();
                 }).then(function () {
                     next();
                 });
