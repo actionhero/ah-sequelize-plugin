@@ -40,12 +40,18 @@ module.exports = {
         }
         opts = opts === null ? { method: 'up' } : opts;
 
-          umzug.execute(opts).then(next());
+          checkMetaOldSchema(api, umzug).then(function () {
+              return umzug.execute(opts);
+          }).then(function() {
+              next();
+          });
       },
 
       migrateUndo: function(next) {
-          umzug.down().then(function() {
-              next();
+          checkMetaOldSchema(api, umzug).then(function() {
+              return umzug.down();
+          }).then(function() {
+                  next();
           });
       },
 
@@ -73,12 +79,11 @@ module.exports = {
 
       autoMigrate: function(next) {
         if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
-            migrateSequelizeMeta(api, umzug)
-                .then(function() {
-                    return umzug.up();
-                }).then(function () {
-                    next();
-                });
+            checkMetaOldSchema(api, umzug).then(function() {
+                return umzug.up();
+            }).then(function () {
+                next();
+            });
         } else {
             next();
         }
@@ -117,61 +122,12 @@ module.exports = {
   }
 };
 
-function migrateSequelizeMeta(api, umzug) {
-
-    var migration = api.sequelize.sequelize.getQueryInterface();
-
-    // Check if we need to upgrade from the old sequlize migration format
-    return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta";', {
-        raw: true
-
-    }).then(function(raw) {
-
+function checkMetaOldSchema(api, umzug) {
+    // Check if we need to upgrade from the old sequelize migration format
+    return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta"').then(function(raw) {
         var rows = raw[0];
         if (rows.length && rows[0].hasOwnProperty('id')) {
-
-            var migrationFiles = fs.readdirSync(umzug.options.migrations.path),
-                data = rows.map(function(row) {
-                    return migrationFiles.filter(function(f) {
-                        return f.substring(0, row.to.length) === row.to;
-
-                    })[0];
-                });
-
-            // Drop the existing migration data
-            return api.sequelize.sequelize.query('DELETE FROM "SequelizeMeta";', null, {
-                raw: true
-
-                // Update the table format
-            }).then(function() {
-                return [
-                    migration.renameColumn('SequelizeMeta', 'to', 'name'),
-                    migration.removeColumn('SequelizeMeta', 'from'),
-                    migration.removeColumn('SequelizeMeta', 'id')
-                ];
-                // Insert data in the new migration format
-            }).then(function() {
-                var MetaModel = umzug.storage.options.storageOptions.model;
-
-                return data.map(function(migrationName) {
-                    return MetaModel.create({
-                        name: migrationName
-                    });
-                });
-            }).all();
-        } else {
-            // TODO check the table layout in case it's empty
-            return false;
+            throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
         }
-    }).then(function(migrated) {
-        if (migrated) {
-            var completeMsg = 'SequelizeMeta migration complete!';
-            api.log(completeMsg);
-            console.log(completeMsg);
-        }
-    }).catch(Sequelize.DatabaseError, function (err) {
-        var noTableMsg = 'No SequelizeMeta table found - skipping meta migration';
-        api.log(noTableMsg);
-        console.log(noTableMsg);
     });
 }

@@ -1,6 +1,3 @@
-### WARNING TO PEOPLE USING `AUTOMIGRATE` in PRODUCTION! - This plugin now uses Umzug's new migration table format! You should use sequelize-cli's `db:migrate:old_schema` to migrate before restarting your AH server!
-
-
 # ah-sequelize-plugin
 
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models
