@@ -1,12 +1,37 @@
 var path              = require('path');
 var fs                = require('fs');
 var Sequelize         = require('sequelize');
+var Umzug             = require('umzug');
 
 module.exports = {
   initialize: function(api, next){
     api.models = {};
 
+      var sequelizeInstance = new Sequelize(
+          api.config.sequelize.database,
+          api.config.sequelize.username,
+          api.config.sequelize.password,
+          api.config.sequelize
+      );
+
+      var umzug = new Umzug({
+          storage: 'sequelize',
+          storageOptions: {
+              sequelize: sequelizeInstance
+          },
+          migrations: {
+              params: [sequelizeInstance.getQueryInterface(), sequelizeInstance.constructor, function() {
+                  throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
+              }],
+              path: api.projectRoot + '/migrations'
+          }
+      });
+
     api.sequelize = {
+
+        sequelize: sequelizeInstance,
+
+        umzug: umzug,
 
       migrate: function(opts, next){
         if(typeof opts === "function"){
@@ -15,27 +40,22 @@ module.exports = {
         }
         opts = opts === null ? { method: 'up' } : opts;
 
-        var migrator = api.sequelize.sequelize.getMigrator({
-          path: api.projectRoot + '/migrations'
-        });
-
-        migrator.migrate(opts).then(function() {
-          next();
-        });
+          checkMetaOldSchema(api, umzug).then(function () {
+              return umzug.execute(opts);
+          }).then(function() {
+              next();
+          });
       },
 
       migrateUndo: function(next) {
-        this.migrate({ method: 'down' }, next);
+          checkMetaOldSchema(api, umzug).then(function() {
+              return umzug.down();
+          }).then(function() {
+                  next();
+          });
       },
 
       connect: function(next){
-        api.sequelize.sequelize = new Sequelize(
-          api.config.sequelize.database,
-          api.config.sequelize.username,
-          api.config.sequelize.password,
-          api.config.sequelize
-        );
-
         var dir = path.normalize(api.projectRoot + '/models');
         fs.readdirSync(dir).forEach(function(file){
           var nameParts = file.split("/");
@@ -59,8 +79,10 @@ module.exports = {
 
       autoMigrate: function(next) {
         if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
-            api.sequelize.migrate({method: 'up'}, function () {
-              next();
+            checkMetaOldSchema(api, umzug).then(function() {
+                return umzug.up();
+            }).then(function () {
+                next();
             });
         } else {
             next();
@@ -99,3 +121,17 @@ module.exports = {
     });
   }
 };
+
+function checkMetaOldSchema(api, umzug) {
+    // Check if we need to upgrade from the old sequelize migration format
+    return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta"', {raw: true}).then(function(raw) {
+        var rows = raw[0];
+        if (rows.length && rows[0].hasOwnProperty('id')) {
+            throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
+        }
+    }).catch(Sequelize.DatabaseError, function (err) {
+        var noTableMsg = 'No SequelizeMeta table found - creating new table';
+        api.log(noTableMsg);
+        console.log(noTableMsg);
+    });
+}
