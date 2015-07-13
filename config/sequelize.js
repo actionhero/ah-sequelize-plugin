@@ -24,6 +24,9 @@ function merge(overlayFn) {
     var mergeObj = {};
     for (var attrname in exports.default.sequelize()) { mergeObj[attrname] = exports.default.sequelize()[attrname]; }
     if (typeof(overlayFn) !== 'undefined') for (var attrname in overlayFn.sequelize()) { mergeObj[attrname] = overlayFn.sequelize()[attrname]; }
+
+    // Map over AH's sequelize fn
+    mergeObj.sequelize = overlayFn.sequelize;
     return mergeObj;
 }
 
