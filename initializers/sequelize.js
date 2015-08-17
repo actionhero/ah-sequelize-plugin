@@ -108,7 +108,7 @@ module.exports = {
     next();
   },
 
-  startPriority: 1001, // the lowest post-core middleware priority
+  startPriority: 101, // aligned with actionhero's redis initializer
   start: function(api, next){
     api.sequelize.connect(function(err){
       if(err) {
