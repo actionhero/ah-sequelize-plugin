@@ -54,7 +54,7 @@ module.exports = {
         phone: DataTypes.STRING,
         passwordHash: DataTypes.TEXT,
         passwordSalt: DataTypes.TEXT,
-        createdAt: DataTypes.DATE
+        createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE
       })
     ]).then(function(){
