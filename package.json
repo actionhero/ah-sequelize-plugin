@@ -28,6 +28,6 @@
   "devDependencies": {},
   "optionalDependencies": {},
   "scripts": {
-    "postinstall": "scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js"
   }
 }
