@@ -23,7 +23,7 @@ module.exports = {
         params: [sequelizeInstance.getQueryInterface(), sequelizeInstance.constructor, function() {
           throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
         }],
-        path: api.projectRoot + '/migrations'
+        path: api.migrationsPath || (api.projectRoot + '/migrations')
       }
     });
 
@@ -56,7 +56,7 @@ module.exports = {
       },
 
       connect: function(next){
-        var dir = path.normalize(api.projectRoot + '/models');
+        var dir = path.normalize((api.config.sequelize.modelRoot || api.projectRoot) + '/models');
         fs.readdirSync(dir).forEach(function(file){
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
@@ -69,7 +69,9 @@ module.exports = {
       loadFixtures: function(next) {
         if(api.config.sequelize.loadFixtures) {
           var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function () {
+          var path = api.config.sequelize.fixturesPath ? api.config.sequelize.fixturesPath : api.projectRoot
+          path.append('/*.{json,yml,js}')
+          SequelizeFixtures.loadFile(path, api.models, function () {
             next();
           });
         } else {
