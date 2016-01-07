@@ -1,12 +1,11 @@
+var path              = require('path');
+var fs                = require('fs');
+var Sequelize         = require('sequelize');
+var Umzug             = require('umzug');
+
 module.exports = {
   initialize: function(api, next){
-
-    var modelObj = api.config.sequelize.apiModelPath.split('.')
-    .reduce(function(obj, pathElem){
-        obj[pathElem] = obj[pathElem] || {};
-        return obj[pathElem]
-    }, api)
-
+    api.models = {};
 
     var sequelizeInstance = new Sequelize(
       api.config.sequelize.database,
@@ -24,7 +23,7 @@ module.exports = {
         params: [sequelizeInstance.getQueryInterface(), sequelizeInstance.constructor, function() {
           throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
         }],
-        path: api.projectRoot + ( api.config.sequelize.migrationsPath || '/migrations' )
+        path: api.projectRoot + '/migrations'
       }
     });
 
@@ -57,11 +56,11 @@ module.exports = {
       },
 
       connect: function(next){
-        var dir = path.normalize(api.projectRoot + ( api.config.sequelize.modelPath || '/models' ));
+        var dir = path.normalize(api.projectRoot + '/models');
         fs.readdirSync(dir).forEach(function(file){
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
-          modelObj[name] = api.sequelize.sequelize.import(dir + '/' + file);
+          api.models[name] = api.sequelize.sequelize.import(dir + '/' + file);
         });
 
         api.sequelize.test(next);
@@ -70,7 +69,7 @@ module.exports = {
       loadFixtures: function(next) {
         if(api.config.sequelize.loadFixtures) {
           var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + ( api.config.sequelize.fixturesPath || '/test/fixtures/' ) + '*.{json,yml,js}', modelObj, function () {
+          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function () {
             next();
           });
         } else {
