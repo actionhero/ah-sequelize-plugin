@@ -8,7 +8,18 @@ exports.default = {
             "port"        : 3306,
             "host"        : "127.0.0.1",
             "username"    : "root",
-            "password"    : ""
+            "password"    : "",
+            
+            "modelPath"      : '/models/',
+            "fixturesPath"   : '/test/fixtures/',
+            "migrationsPath" : '/migrations/',
+            "apiModelPath"   : 'models', // api.models
+            
+            // sqlite cofig (requires sqlite3) - 
+            // if persistent, create the store file with the sqlite3 cli command "mkdir store && sqlite3 /store/sqlite.db" followed by ".save" in the cli
+            
+            // "dialect"     : 'sqlite',
+            // "storage"     : ":memory:", //__dirname + '/../store/sqlite.db',
         };
     }
 };
