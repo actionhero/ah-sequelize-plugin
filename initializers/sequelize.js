@@ -95,7 +95,9 @@ module.exports = {
       //  - next (callback function(err)): Will be called after the test is complete
       //      If the test fails, the `err` argument will contain the error
       test: function(next){
-        api.sequelize.sequelize.query("SELECT NOW()").then(function(){
+        var query = "SELECT NOW()";
+        if(api.config.sequelize.dialect == 'sqlite') query = "SELECT strftime('%s', 'now');";
+        api.sequelize.sequelize.query(query).then(function(){
           next();
         }).catch(function(err){
           api.log(err, 'warning');
