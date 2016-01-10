@@ -69,7 +69,7 @@ module.exports = {
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           var modelFunc = currySchemaFunc(require(dir + '/' + file));
-          api.models[name] = api.sequelize.sequelize.import(capitalizeFirstLetter(name), modelFunc);
+          api.models[name] = api.sequelize.sequelize.import(name, modelFunc);
         });
 
         api.sequelize.test(next);
@@ -132,10 +132,6 @@ module.exports = {
     });
   }
 };
-
-function capitalizeFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 function checkMetaOldSchema(api, umzug) {
   // Check if we need to upgrade from the old sequelize migration format
