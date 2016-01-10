@@ -133,6 +133,10 @@ module.exports = {
   }
 };
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function checkMetaOldSchema(api, umzug) {
   // Check if we need to upgrade from the old sequelize migration format
   return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta"', {raw: true}).then(function(raw) {
