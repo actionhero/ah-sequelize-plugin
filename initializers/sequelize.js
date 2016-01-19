@@ -28,11 +28,7 @@ module.exports = {
     });
     
     function currySchemaFunc(SchemaExportFunc) {
-      if (SchemaExportFunc.length == 3) {
-        return function(a,b) { return SchemaExportFunc(a,b,api) }
-      } else {
-        return SchemaExportFunc;
-      }
+      return function(a,b) { return SchemaExportFunc(a,b,api) }
     };
 
     api.sequelize = {
