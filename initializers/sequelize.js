@@ -96,6 +96,7 @@ module.exports = {
       //      If the test fails, the `err` argument will contain the error
       test: function(next){
         var query = "SELECT NOW()";
+        if(api.config.sequelize.dialect == 'mssql') query = "SELECT GETDATE();";
         if(api.config.sequelize.dialect == 'sqlite') query = "SELECT strftime('%s', 'now');";
         api.sequelize.sequelize.query(query).then(function(){
           next();
