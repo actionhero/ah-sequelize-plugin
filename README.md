@@ -20,7 +20,7 @@ A `./config/sequelize.js` file will be created which will store your database co
 Use the exports form of sequelize models in `./models` with the file name matching that of the model, IE:
 
 ```javascript
-module.exports = function(sequelize, DataTypes) {
+module.exports = function(sequelize, DataTypes, api) {
   return sequelize.define("Project", {
     name: DataTypes.STRING,
     description: DataTypes.TEXT
@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes) {
 }
 ```
 
-Models are loaded into `api.models`, so the example above would be `api.models.Project`.
+Models are loaded into `api.models`, so the example above would be `api.models.Project`. These module.exports allow for a third optional argument "api" which is the ActionHero API object. This can be used to access configs and initializer functions, among other things.
 
 ## [Migrations](http://docs.sequelizejs.com/en/latest/api/migrations)
 
