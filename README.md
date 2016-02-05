@@ -28,7 +28,7 @@ module.exports = function(sequelize, DataTypes, api) {
 }
 ```
 
-Models are loaded into `api.models`, so the example above would be `api.models.Project`. These module.exports allow for a third optional argument "api" which is the ActionHero API object. This can be used to access configs and initializer functions, among other things.
+Models are loaded into `api.models`, so the example above would be `api.models.Project`. These module.exports allow for a third optional parameter "api" which is the ActionHero API object. This can be used to access configs and initializer functions, among other things.
 
 ## [Migrations](http://docs.sequelizejs.com/en/latest/api/migrations)
 
