@@ -31,3 +31,8 @@ try {
 ['models', 'test/fixtures'].forEach(function(f){
   mkdirp.sync(path.normalize(process.cwd() + '/../../' + f));
 });
+
+console.warn('Warning:');
+console.warn('For actionhero 13 or higher please make sure you link this plugin.');
+console.warn('npm run actionhero link -- --name ah-sequelize-plugin');
+console.warn('To read more about this, http://www.actionherojs.com/docs/#plugins');

@@ -4,6 +4,10 @@ var Sequelize         = require('sequelize');
 var Umzug             = require('umzug');
 
 module.exports = {
+  loadPriority: 101, // aligned with actionhero's redis initializer
+  startPriority: 101, // aligned with actionhero's redis initializer
+  stopPriority: 101, // aligned with actionhero's redis initializer
+
   initialize: function(api, next){
     api.models = {};
 
@@ -26,9 +30,9 @@ module.exports = {
         path: api.projectRoot + '/migrations'
       }
     });
-    
-    function currySchemaFunc(SchemaExportFunc) {
-      return function(a,b) { return SchemaExportFunc(a,b,api) }
+
+    var currySchemaFunc = function(SchemaExportFunc) {
+      return function(a,b) { return SchemaExportFunc(a,b,api); };
     };
 
     api.sequelize = {
@@ -83,7 +87,7 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate == null || api.config.sequelize.autoMigrate) {
+        if(api.config.sequelize.autoMigrate === null || api.config.sequelize.autoMigrate) {
           checkMetaOldSchema(api, umzug).then(function() {
             return umzug.up();
           }).then(function () {
@@ -116,7 +120,6 @@ module.exports = {
     next();
   },
 
-  startPriority: 101, // aligned with actionhero's redis initializer
   start: function(api, next){
     api.sequelize.connect(function(err){
       if(err) {
@@ -130,7 +133,7 @@ module.exports = {
   }
 };
 
-function checkMetaOldSchema(api, umzug) {
+var checkMetaOldSchema = function(api, umzug) {
   // Check if we need to upgrade from the old sequelize migration format
   return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta"', {raw: true}).then(function(raw) {
     var rows = raw[0];
@@ -138,8 +141,8 @@ function checkMetaOldSchema(api, umzug) {
       throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
     }
   }).catch(Sequelize.DatabaseError, function (err) {
-    var noTableMsg = 'No SequelizeMeta table found - creating new table';
+    var noTableMsg = 'No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)';
     api.log(noTableMsg);
     console.log(noTableMsg);
   });
-}
+};
