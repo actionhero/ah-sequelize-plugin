@@ -1,11 +1,11 @@
 # ah-sequelize-plugin
 
-This plugin will use the sequelize orm to create `api.models` which contain your sequelize models
+This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Setup
 
 - install this plugin: `npm install ah-sequelize-plugin --save`
-- be sure to enable the plugin within actionhero (`config/plugins.js`)
+- be sure to enable the plugin within actionhero (`config/plugins.js`) or If you're using actionhero 13 or higher make sure you linked/included the plugin using `npm run actionhero link -- --name ah-sequelize-plugin`
 - you will need to add the sequelize package (`npm install sequelize --save`) to your package.json
 - you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
 - you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
@@ -35,7 +35,7 @@ Models are loaded into `api.models`, so the example above would be `api.models.P
 This plugin does not condone the use of `Sequelize.sync()` in favor of migrations.  Keep you migrations in `./migrations` and use the [sequelize-cli](https://github.com/sequelize/cli) to execute them.
 
 An example migration to create a `users` table would look like:
-```javascript 
+```javascript
 // from ./migrations/20140101000001-create-users.js
 
 var Promise = require('bluebird');
@@ -74,7 +74,7 @@ module.exports = {
       ]);
     });
   },
- 
+
   down: function(migration, DataTypes) {
     return Promise.all([
       migration.dropTable('users')
@@ -83,7 +83,7 @@ module.exports = {
 }
 ```
 
-You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/docs/migrations/) to create and execute migrations. 
+You can use the [sequelize-cli](http://docs.sequelizejs.com/en/latest/docs/migrations/) to create and execute migrations.
 
 `api.sequelize.migrate` and `api.sequelize.migrateUndo` are now based on [Umzug](https://github.com/sequelize/umzug), and are maintained for legacy purposes.
 An Umzug instance is available at `api.sequelize.umzug`, and should be used to perform (and undo) migrations programatically using the [official API](https://github.com/sequelize/umzug#api).
