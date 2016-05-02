@@ -87,7 +87,9 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate === null || api.config.sequelize.autoMigrate) {
+        if(api.config.sequelize.autoMigrate === null || 
+          api.config.sequelize.autoMigrate === undefined ||
+          api.config.sequelize.autoMigrate) {
           checkMetaOldSchema(api, umzug).then(function() {
             return umzug.up();
           }).then(function () {
