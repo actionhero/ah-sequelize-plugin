@@ -87,7 +87,9 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate === null || api.config.sequelize.autoMigrate) {
+        if(api.config.sequelize.autoMigrate === null || 
+          api.config.sequelize.autoMigrate === undefined ||
+          api.config.sequelize.autoMigrate) {
           checkMetaOldSchema(api, umzug).then(function() {
             return umzug.up();
           }).then(function () {
@@ -135,7 +137,7 @@ module.exports = {
 
 var checkMetaOldSchema = function(api, umzug) {
   // Check if we need to upgrade from the old sequelize migration format
-  return api.sequelize.sequelize.query('SELECT * FROM "SequelizeMeta"', {raw: true}).then(function(raw) {
+  return api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', {raw: true}).then(function(raw) {
     var rows = raw[0];
     if (rows.length && rows[0].hasOwnProperty('id')) {
       throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
