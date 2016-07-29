@@ -4,13 +4,13 @@ var Sequelize         = require('sequelize');
 var Umzug             = require('umzug');
 
 module.exports = {
-  loadPriority: 101, // aligned with actionhero's redis initializer
-  startPriority: 101, // aligned with actionhero's redis initializer
-  stopPriority: 101, // aligned with actionhero's redis initializer
+  loadPriority: 121, // aligned with actionhero's redis and logger initializer
+  startPriority: 121, // aligned with actionhero's redis and logger initializer
+  stopPriority: 121, // aligned with actionhero's redis and logger initializer
 
   initialize: function(api, next){
     api.models = {};
-
+    api.config.sequelize.logging = api.logger.info;
     var sequelizeInstance = new Sequelize(
       api.config.sequelize.database,
       api.config.sequelize.username,
@@ -27,7 +27,8 @@ module.exports = {
         params: [sequelizeInstance.getQueryInterface(), sequelizeInstance.constructor, function() {
           throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
         }],
-        path: api.projectRoot + '/migrations'
+        path: api.projectRoot + '/migrations',
+        pattern: /\.js$/
       }
     });
 
@@ -87,7 +88,7 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate === null || 
+        if(api.config.sequelize.autoMigrate === null ||
           api.config.sequelize.autoMigrate === undefined ||
           api.config.sequelize.autoMigrate) {
           checkMetaOldSchema(api, umzug).then(function() {
