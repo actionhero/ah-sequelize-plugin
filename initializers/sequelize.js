@@ -1,14 +1,14 @@
-var path              = require('path');
-var fs                = require('fs');
-var Sequelize         = require('sequelize');
-var Umzug             = require('umzug');
+var path = require('path');
+var fs = require('fs');
+var Sequelize = require('sequelize');
+var Umzug = require('umzug');
 
 module.exports = {
   loadPriority: 121, // aligned with actionhero's redis and logger initializer
   startPriority: 121, // aligned with actionhero's redis and logger initializer
   stopPriority: 121, // aligned with actionhero's redis and logger initializer
 
-  initialize: function(api, next){
+  initialize: function(api, next) {
     api.models = {};
     api.config.sequelize.logging = api.logger.info;
     var sequelizeInstance = new Sequelize(
@@ -33,7 +33,9 @@ module.exports = {
     });
 
     var currySchemaFunc = function(SchemaExportFunc) {
-      return function(a,b) { return SchemaExportFunc(a,b,api); };
+      return function(a, b) {
+        return SchemaExportFunc(a, b, api);
+      };
     };
 
     api.sequelize = {
@@ -42,14 +44,16 @@ module.exports = {
 
       umzug: umzug,
 
-      migrate: function(opts, next){
-        if(typeof opts === "function"){
+      migrate: function(opts, next) {
+        if (typeof opts === "function") {
           next = opts;
           opts = null;
         }
-        opts = opts === null ? { method: 'up' } : opts;
+        opts = opts === null ? {
+          method: 'up'
+        } : opts;
 
-        checkMetaOldSchema(api, umzug).then(function () {
+        checkMetaOldSchema(api, umzug).then(function() {
           return umzug.execute(opts);
         }).then(function() {
           next();
@@ -64,9 +68,9 @@ module.exports = {
         });
       },
 
-      connect: function(next){
+      connect: function(next) {
         var dir = path.normalize(api.projectRoot + '/models');
-        fs.readdirSync(dir).forEach(function(file){
+        fs.readdirSync(dir).forEach(function(file) {
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           var modelFunc = currySchemaFunc(require(dir + '/' + file));
@@ -77,9 +81,9 @@ module.exports = {
       },
 
       loadFixtures: function(next) {
-        if(api.config.sequelize.loadFixtures) {
+        if (api.config.sequelize.loadFixtures) {
           var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function () {
+          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, function() {
             next();
           });
         } else {
@@ -88,12 +92,12 @@ module.exports = {
       },
 
       autoMigrate: function(next) {
-        if(api.config.sequelize.autoMigrate === null ||
+        if (api.config.sequelize.autoMigrate === null ||
           api.config.sequelize.autoMigrate === undefined ||
           api.config.sequelize.autoMigrate) {
           checkMetaOldSchema(api, umzug).then(function() {
             return umzug.up();
-          }).then(function () {
+          }).then(function() {
             next();
           });
         } else {
@@ -106,13 +110,13 @@ module.exports = {
       // Arguments:
       //  - next (callback function(err)): Will be called after the test is complete
       //      If the test fails, the `err` argument will contain the error
-      test: function(next){
+      test: function(next) {
         var query = "SELECT NOW()";
-        if(api.config.sequelize.dialect == 'mssql') query = "SELECT GETDATE();";
-        if(api.config.sequelize.dialect == 'sqlite') query = "SELECT strftime('%s', 'now');";
-        api.sequelize.sequelize.query(query).then(function(){
+        if (api.config.sequelize.dialect == 'mssql') query = "SELECT GETDATE();";
+        if (api.config.sequelize.dialect == 'sqlite') query = "SELECT strftime('%s', 'now');";
+        api.sequelize.sequelize.query(query).then(function() {
           next();
-        }).catch(function(err){
+        }).catch(function(err) {
           api.log(err, 'warning');
           console.log(err);
           next(err);
@@ -123,9 +127,9 @@ module.exports = {
     next();
   },
 
-  start: function(api, next){
-    api.sequelize.connect(function(err){
-      if(err) {
+  start: function(api, next) {
+    api.sequelize.connect(function(err) {
+      if (err) {
         return next(err);
       }
 
@@ -138,14 +142,18 @@ module.exports = {
 
 var checkMetaOldSchema = function(api, umzug) {
   // Check if we need to upgrade from the old sequelize migration format
-  return api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', {raw: true}).then(function(raw) {
+  return api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', {
+    raw: true
+  }).then(function(raw) {
     var rows = raw[0];
     if (rows.length && rows[0].hasOwnProperty('id')) {
       throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
     }
-  }).catch(Sequelize.DatabaseError, function (err) {
+  }).catch(Sequelize.DatabaseError, function(err) {
     var noTableMsg = 'No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)';
-    api.log(noTableMsg);
-    console.log(noTableMsg);
+    if (process.env.NODE_ENV != "test") {
+      api.log(noTableMsg);
+      console.log(noTableMsg);
+    }
   });
 };
