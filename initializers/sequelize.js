@@ -83,7 +83,8 @@ module.exports = {
       loadFixtures: function(next) {
         if (api.config.sequelize.loadFixtures) {
           var SequelizeFixtures = require('sequelize-fixtures');
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models).then(function() {
+          var options = { log: (api.config.logging)? console.log() : function(){}};
+          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, options).then(function() {
             next();
           });
         } else {
