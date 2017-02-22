@@ -74,9 +74,10 @@ module.exports = {
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           var modelFunc = currySchemaFunc(require(dir + '/' + file));
-          api.models[name] = api.sequelize.sequelize.import(name, modelFunc);
+          api.sequelize.sequelize.import(name, modelFunc);
         });
 
+        api.models = api.sequelize.sequelize.models;
         api.sequelize.test(next);
       },
 
