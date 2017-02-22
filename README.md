@@ -2,6 +2,9 @@
 
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
+## Notes
+Version 0.9.0 has a [breaking change](https://github.com/evantahler/ah-sequelize-plugin/pull/30) regarding model names.
+
 ## Setup
 
 - install this plugin: `npm install ah-sequelize-plugin --save`

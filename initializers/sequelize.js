@@ -9,7 +9,6 @@ module.exports = {
   stopPriority: 121, // aligned with actionhero's redis and logger initializer
 
   initialize: function(api, next) {
-    api.models = {};
     api.config.sequelize.logging = api.logger.info;
     var sequelizeInstance = new Sequelize(
       api.config.sequelize.database,
