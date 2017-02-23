@@ -70,7 +70,8 @@ module.exports = {
       connect: function(next) {
         var dir = path.normalize(api.projectRoot + '/models');
         fs.readdirSync(dir).forEach(function(file) {
-	  if (fs.statSync(path.join(dir, file)).isDirectory()) return;
+	  if (fs.statSync(path.join(dir, file)).isDirectory() ||
+	      path.extname(file) !== '.js') return;
           var nameParts = file.split("/");
           var name = nameParts[(nameParts.length - 1)].split(".")[0];
           var modelFunc = currySchemaFunc(require(dir + '/' + file));
