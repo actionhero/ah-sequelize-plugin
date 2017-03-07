@@ -1,5 +1,7 @@
 # ah-sequelize-plugin
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/actionhero/ah-sequelize-plugin.svg)](https://greenkeeper.io/)
+
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Setup
