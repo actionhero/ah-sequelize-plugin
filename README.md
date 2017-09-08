@@ -97,7 +97,24 @@ By default, `ah-sequelize-plugin` will automatically execute any pending migrati
 
 ## [Associations](http://docs.sequelizejs.com/en/latest/api/associations)
 
-If you want to declare associations, best practice has you create an `associations.js` initializer within your project which might look like this:
+If you want to declare associations, best practice has you define an `.associate()` class method in your model such as:
+
+```javascript
+module.exports = function(sequelize, DataTypes) {
+    var User = sequelize.define("User", {
+        username: DataTypes.STRING
+    }, {
+        classMethods: {
+            associate: function(models) {
+                User.hasMany(models.Task)
+            }
+        }
+    });
+    return User;
+};
+```
+
+Then you create an `associations.js` initializer within your project which might look like this:
 
 ```javascript
 module.exports = {
@@ -111,12 +128,11 @@ module.exports = {
         next();
     },
     start: function (api, next) {
-        api.models.user.hasMany(api.models.posts);
-        api.models.posts.hasMany(api.models.comments);
-
-        api.models.comments.belongsTo(api.models.posts);
-        api.models.posts.belongsTo(api.models.user);
-
+	    for (var model in api.models) {
+            if (api.models[model].associate) {
+                api.models[model].associate(api.models)
+            }
+        }
         next();
     },
     stop: function (api, next) {
