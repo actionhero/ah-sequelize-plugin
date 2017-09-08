@@ -10,7 +10,7 @@ module.exports = {
 
   initialize: function(api, next) {
     api.models = {};
-    api.config.sequelize.logging = api.logger.info;
+    api.config.sequelize.logging = api.log;
     var sequelizeInstance = new Sequelize(
       api.config.sequelize.database,
       api.config.sequelize.username,
