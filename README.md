@@ -1,3 +1,4 @@
+![plugin](https://i.imgur.com/nd1btLt.png)
 # ah-sequelize-plugin
 
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
