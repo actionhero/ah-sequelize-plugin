@@ -10,7 +10,7 @@ module.exports = {
 
   initialize: function(api, next) {
     api.models = {};
-    api.config.sequelize.logging = api.logger.info;
+    api.config.sequelize.logging = api.log;
     var sequelizeInstance = new Sequelize(
       api.config.sequelize.database,
       api.config.sequelize.username,
@@ -69,14 +69,21 @@ module.exports = {
       },
 
       connect: function(next) {
-        var dir = path.normalize(api.projectRoot + '/models');
-        fs.readdirSync(dir).forEach(function(file) {
-          var nameParts = file.split("/");
-          var name = nameParts[(nameParts.length - 1)].split(".")[0];
-          var modelFunc = currySchemaFunc(require(dir + '/' + file));
-          api.models[name] = api.sequelize.sequelize.import(name, modelFunc);
-        });
+	function importModelsFromDirectory(dir) {
+          fs.readdirSync(dir).forEach(function(file) {
+	    if (fs.statSync(path.join(dir, file)).isDirectory())
+	      return importModelsFromDirectory(path.join(dir, file))
+	    if (path.extname(file) !== '.js') return;
+            var nameParts = file.split("/");
+            var name = nameParts[(nameParts.length - 1)].split(".")[0];
+            var modelFunc = currySchemaFunc(require(dir + '/' + file));
+            api.sequelize.sequelize.import(name, modelFunc);
+          });
+	}
 
+	var dir = path.normalize(api.projectRoot + '/models');
+	importModelsFromDirectory(dir);
+        api.models = api.sequelize.sequelize.models;
         api.sequelize.test(next);
       },
 
