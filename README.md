@@ -4,7 +4,7 @@
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Notes
-Version 1.0.0 is only compatible with ActionHero versions `+18.0.0`.
+Versions `>=1.0.0` are only compatible with ActionHero versions `>=18.0.0`.
 
 For versions compatible with ActionHero versions prior to `18.0.0`, use version [`0.9.0`](https://github.com/actionhero/ah-sequelize-plugin/releases/tag/v0.9.0).
 
@@ -20,7 +20,7 @@ For versions compatible with ActionHero versions prior to `18.0.0`, use version 
 - Postgress: `npm install --save pg pg-hstore`
 - MSSQL: `npm install --save tedious`
 
-For additional information on supported databases visit the [Sequelize Docs](http://docs.sequelizejs.com/manual/installation/getting-started]).
+For additional information on supported databases visit the [Sequelize Docs](http://docs.sequelizejs.com/manual/installation/getting-started).
 
 ### Add optional depenedencies
 - For automatic fixures: `npm install sequelize-fixtures --save`
@@ -51,8 +51,8 @@ module.exports = function (sequelize, DataTypes, api) {
   })
 
   // Attach Class methods
-  model.rehydrate = (api, user) => {
-    return api.models.user.build(user)
+  model.rehydrate = function (user) {
+    return this.build(user)
   }
 
   // Attach Instance methods
