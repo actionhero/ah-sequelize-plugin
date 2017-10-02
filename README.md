@@ -129,45 +129,49 @@ By default, `ah-sequelize-plugin` will automatically execute any pending migrati
 If you want to declare associations, best practice has you define an `.associate()` class method in your model such as:
 
 ```javascript
-module.exports = function(sequelize, DataTypes) {
-    var User = sequelize.define("User", {
-        username: DataTypes.STRING
-    }, {
-        classMethods: {
-            associate: function(models) {
-                User.hasMany(models.Task)
-            }
-        }
-    });
-    return User;
-};
+module.exports = function (sequelize, DataTypes, api) {
+  const model = sequelize.define('user', {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true
+    }
+  })
+
+  model.associate = function (models) {
+    this.hasMany(models.email)
+  }
+
+  return model
+}
 ```
 
 Then you create an `associations.js` initializer within your project which might look like this:
 
 ```javascript
-module.exports = {
-    loadPriority: 1000,
-    startPriority: 1002, // priority has to be after models have been loaded
-    stopPriority: 1000,
+const ActionHero = require('actionhero')
+const api = ActionHero.api
 
-    associations: {},
-
-    initialize: function (api, next) {
-        next();
-    },
-    start: function (api, next) {
-	    for (var model in api.models) {
-            if (api.models[model].associate) {
-                api.models[model].associate(api.models)
-            }
-        }
-        next();
-    },
-    stop: function (api, next) {
-        next();
+module.exports =
+  class AssociationsInitializer extends ActionHero.Initializer {
+    constructor () {
+      super()
+      this.name = 'associations'
+      this.loadPriority = 1000
+      this.startPriority = 1002
+      this.stopPriority = 1000
     }
-};
+
+    initialize () { }
+
+    start () {
+      api.models.filter(m => typeof m.associate === 'function')
+        .forEach(m => m.associate(api.models))
+    }
+
+    stop () { }
+  }
+
 ```
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
