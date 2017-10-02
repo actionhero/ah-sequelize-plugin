@@ -1,167 +1,24 @@
-var path = require('path');
-var fs = require('fs');
-var Sequelize = require('sequelize');
-var Umzug = require('umzug');
+const ActionHero = require('actionhero')
+const SequelizePlugin = require('../sequelize.js')
 
-module.exports = {
-  loadPriority: 121, // aligned with actionhero's redis and logger initializer
-  startPriority: 121, // aligned with actionhero's redis and logger initializer
-  stopPriority: 121, // aligned with actionhero's redis and logger initializer
+module.exports =
+  class SequelizeInitializer extends ActionHero.Initializer {
+    constructor () {
+      super()
+      this.name = 'sequelize'
+      this.loadPriority = 101
+      this.startPriority = 101
+      this.stopPriority = 300
+    }
 
-  initialize: function(api, next) {
-    api.models = {};
-    api.config.sequelize.logging = api.log;
-    var sequelizeInstance = new Sequelize(
-      api.config.sequelize.database,
-      api.config.sequelize.username,
-      api.config.sequelize.password,
-      api.config.sequelize
-    );
+    async initialize () {
+      ActionHero.api.models = {}
+      ActionHero.api.sequelize = new SequelizePlugin()
+    }
 
-    var umzug = new Umzug({
-      storage: 'sequelize',
-      storageOptions: {
-        sequelize: sequelizeInstance
-      },
-      migrations: {
-        params: [sequelizeInstance.getQueryInterface(), sequelizeInstance.constructor, function() {
-          throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.');
-        }],
-        path: api.projectRoot + '/migrations',
-        pattern: /\.js$/
-      }
-    });
-
-    var currySchemaFunc = function(SchemaExportFunc) {
-      return function(a, b) {
-        return SchemaExportFunc(a, b, api);
-      };
-    };
-
-    api.sequelize = {
-
-      sequelize: sequelizeInstance,
-
-      umzug: umzug,
-
-      migrate: function(opts, next) {
-        if (typeof opts === "function") {
-          next = opts;
-          opts = null;
-        }
-        opts = opts === null ? {
-          method: 'up'
-        } : opts;
-
-        checkMetaOldSchema(api, umzug).then(function() {
-          return umzug.execute(opts);
-        }).then(function() {
-          next();
-        });
-      },
-
-      migrateUndo: function(next) {
-        checkMetaOldSchema(api, umzug).then(function() {
-          return umzug.down();
-        }).then(function() {
-          next();
-        });
-      },
-
-      connect: function(next) {
-	function importModelsFromDirectory(dir) {
-          fs.readdirSync(dir).forEach(function(file) {
-	    if (fs.statSync(path.join(dir, file)).isDirectory())
-	      return importModelsFromDirectory(path.join(dir, file))
-	    if (path.extname(file) !== '.js') return;
-            var nameParts = file.split("/");
-            var name = nameParts[(nameParts.length - 1)].split(".")[0];
-            var modelFunc = currySchemaFunc(require(dir + '/' + file));
-            api.sequelize.sequelize.import(name, modelFunc);
-          });
-	}
-
-	var dir = path.normalize(api.projectRoot + '/models');
-	importModelsFromDirectory(dir);
-        api.models = api.sequelize.sequelize.models;
-        api.sequelize.test(next);
-      },
-
-      loadFixtures: function(next) {
-        if (api.config.sequelize.loadFixtures) {
-          var SequelizeFixtures = require('sequelize-fixtures');
-          var options = { log: (api.config.logging)? console.log : function(){}};
-          SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, options).then(function() {
-            next();
-          });
-        } else {
-          next();
-        }
-      },
-
-      autoMigrate: function(next) {
-        if (api.config.sequelize.autoMigrate === null ||
-          api.config.sequelize.autoMigrate === undefined ||
-          api.config.sequelize.autoMigrate) {
-          checkMetaOldSchema(api, umzug).then(function() {
-            return umzug.up();
-          }).then(function() {
-            next();
-          });
-        } else {
-          next();
-        }
-      },
-
-      // api.sequelize.test([exitOnError=true], next);
-      // Checks to see if mysql can be reached by selecting the current time
-      // Arguments:
-      //  - next (callback function(err)): Will be called after the test is complete
-      //      If the test fails, the `err` argument will contain the error
-      test: function(next) {
-        var query = "SELECT NOW()";
-        if (api.config.sequelize.dialect == 'mssql') query = "SELECT GETDATE();";
-        if (api.config.sequelize.dialect == 'sqlite') query = "SELECT strftime('%s', 'now');";
-        api.sequelize.sequelize.query(query).then(function() {
-          next();
-        }).catch(function(err) {
-          api.log(err, 'warning');
-          console.log(err);
-          next(err);
-        });
-      }
-    };
-
-    next();
-  },
-
-  start: function(api, next) {
-    api.sequelize.connect(function(err) {
-      if (err) {
-        return next(err);
-      }
-
-      api.sequelize.autoMigrate(function() {
-        api.sequelize.loadFixtures(next);
-      });
-    });
+    async start () {
+      await ActionHero.api.sequelize.connect()
+      await ActionHero.api.sequelize.autoMigrate()
+      await ActionHero.api.sequelize.loadFixtures()
+    }
   }
-};
-
-var checkMetaOldSchema = function(api, umzug) {
-  // Check if we need to upgrade from the old sequelize migration format
-  return api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', {
-    raw: true
-  }).then(function(raw) {
-    var rows = raw[0];
-    if (rows.length && rows[0].hasOwnProperty('id')) {
-      throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.');
-    }
-  }).catch(Sequelize.DatabaseError, function(err) {
-    var noTableMsg = 'No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)';
-    if (process.env.NODE_ENV != "test") {
-      api.log(noTableMsg);
-      console.log(noTableMsg);
-    }
-  });
-};
