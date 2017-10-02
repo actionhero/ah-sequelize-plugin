@@ -4,35 +4,69 @@
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Notes
-Version 0.9.0 has a [breaking change](https://github.com/evantahler/ah-sequelize-plugin/pull/30) regarding model names.
+Versions `>=1.0.0` are only compatible with ActionHero versions `>=18.0.0`.
+
+For versions compatible with ActionHero versions prior to `18.0.0`, use version [`0.9.0`](https://github.com/actionhero/ah-sequelize-plugin/releases/tag/v0.9.0).
 
 ## Setup
 
-- install this plugin: `npm install ah-sequelize-plugin --save`
-- be sure to enable the plugin within actionhero (`config/plugins.js`) or If you're using actionhero 13 or higher make sure you linked/included the plugin using `npm run actionhero link -- --name ah-sequelize-plugin`
-- you will need to add the sequelize package (`npm install sequelize --save`) to your package.json
-- you will need to add the sequelize-fixtures package (`npm install sequelize-fixtures --save`) to your package.json
-- you will need to add the mysql (or other supported database) package (`npm install mysql --save`) to your package.json
-  - there are many options you can pass to sequelize.  You can learn more here: http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html
-- you will need to add the sequelize-cli package (`npm install sequelize-cli`) to your package.json
-  - you could install it globally instead (`npm install -g sequelize-cli`)
+- Install this plugin: `npm install ah-sequelize-plugin --save`
+- Link the plugin: `npm run actionhero link -- --name ah-sequelize-plugin`
+- Add sequelize package: `npm install sequelize --save`
 
-A `./config/sequelize.js` file will be created which will store your database configuration
+### Add supported database packages
+- MySQL: `npm install mysql2 --save`
+- SQLite: `npm install sqlite3 --save`
+- Postgress: `npm install --save pg pg-hstore`
+- MSSQL: `npm install --save tedious`
+
+For additional information on supported databases visit the [Sequelize Docs](http://docs.sequelizejs.com/manual/installation/getting-started).
+
+### Add optional depenedencies
+- For automatic fixures: `npm install sequelize-fixtures --save`
+- For Sequelize CLI: `npm install --save-dev sequelize-cli`
+
+### Configuration
+
+A `./config/sequelize.js` file will be created which will store your database configuration.  Read commented sections of configuration file for examples of multi-environment configurations.
 
 ## [Models](http://docs.sequelizejs.com/en/latest/api/models)
 
 Use the exports form of sequelize models in `./models` with the file name matching that of the model, IE:
 
 ```javascript
-module.exports = function(sequelize, DataTypes, api) {
-  return sequelize.define("Project", {
-    name: DataTypes.STRING,
-    description: DataTypes.TEXT
+// from ./models/user.js
+
+module.exports = function (sequelize, DataTypes, api) {
+
+  // Define model structure and options
+  const model = sequelize.define('user', {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true
+    }
+  }, {
+    paranoid: true
   })
+
+  // Attach Class methods
+  model.rehydrate = function (user) {
+    return this.build(user)
+  }
+
+  // Attach Instance methods
+  model.prototype.apiData = function () {
+    return {
+      id: this.id
+    }
+  }
+
+  return model
 }
 ```
 
-Models are loaded into `api.models`, so the example above would be `api.models.Project`. These module.exports allow for a third optional parameter "api" which is the ActionHero API object. This can be used to access configs and initializer functions, among other things.
+Models are loaded into `api.models`, so the example above would be `api.models.user`. These module.exports allow for a third optional parameter "api" which is the ActionHero API object. This can be used to access configs and initializer functions, among other things.
 
 ## [Migrations](http://docs.sequelizejs.com/en/latest/api/migrations)
 
@@ -42,47 +76,41 @@ An example migration to create a `users` table would look like:
 ```javascript
 // from ./migrations/20140101000001-create-users.js
 
-var Promise = require('bluebird');
-
 module.exports = {
-  up: function(migration, DataTypes) {
-    return Promise.all([
-      migration.createTable('users', {
-        id: {
-          type: DataTypes.INTEGER,
-          primaryKey: true,
-          autoIncrement: true
-        },
-        name: DataTypes.STRING,
-        email: DataTypes.STRING,
-        phone: DataTypes.STRING,
-        passwordHash: DataTypes.TEXT,
-        passwordSalt: DataTypes.TEXT,
-        createdAt: DataTypes.DATE,
-        updatedAt: DataTypes.DATE
-      })
-    ]).then(function(){
-      return Promise.all([
-        migration.addIndex('users', ['email'], {
-          indexName: 'email_index',
-          indicesType: 'UNIQUE'
-        }),
-        migration.addIndex('users', ['name'], {
-          indexName: 'name_index',
-          indicesType: 'UNIQUE'
-        }),
-        migration.addIndex('users', ['phone'], {
-          indexName: 'phone_index',
-          indicesType: 'UNIQUE'
-        })
-      ]);
-    });
+  up: async function (migration, DataTypes) {
+    await migration.createTable('users', {
+      id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+      },
+      name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      phone: DataTypes.STRING,
+      passwordHash: DataTypes.TEXT,
+      passwordSalt: DataTypes.TEXT,
+      createdAt: DataTypes.DATE,
+      updatedAt: DataTypes.DATE
+    })
+
+    await migration.addIndex('users', ['email'], {
+      indexName: 'email_index',
+      indicesType: 'UNIQUE'
+    })
+
+    await migration.addIndex('users', ['name'], {
+      indexName: 'name_index',
+      indicesType: 'UNIQUE'
+    })
+
+    await migration.addIndex('users', ['phone'], {
+      indexName: 'phone_index',
+      indicesType: 'UNIQUE'
+    })
   },
 
-  down: function(migration, DataTypes) {
-    return Promise.all([
-      migration.dropTable('users')
-    ]);
+  down: async function (migration, DataTypes) {
+    await migration.dropTable('users')
   }
 }
 ```
@@ -101,45 +129,49 @@ By default, `ah-sequelize-plugin` will automatically execute any pending migrati
 If you want to declare associations, best practice has you define an `.associate()` class method in your model such as:
 
 ```javascript
-module.exports = function(sequelize, DataTypes) {
-    var User = sequelize.define("User", {
-        username: DataTypes.STRING
-    }, {
-        classMethods: {
-            associate: function(models) {
-                User.hasMany(models.Task)
-            }
-        }
-    });
-    return User;
-};
+module.exports = function (sequelize, DataTypes, api) {
+  const model = sequelize.define('user', {
+    id: {
+      type: DataTypes.INTEGER.UNSIGNED,
+      autoIncrement: true,
+      primaryKey: true
+    }
+  })
+
+  model.associate = function (models) {
+    this.hasMany(models.email)
+  }
+
+  return model
+}
 ```
 
 Then you create an `associations.js` initializer within your project which might look like this:
 
 ```javascript
-module.exports = {
-    loadPriority: 1000,
-    startPriority: 1002, // priority has to be after models have been loaded
-    stopPriority: 1000,
+const ActionHero = require('actionhero')
+const api = ActionHero.api
 
-    associations: {},
-
-    initialize: function (api, next) {
-        next();
-    },
-    start: function (api, next) {
-	    for (var model in api.models) {
-            if (api.models[model].associate) {
-                api.models[model].associate(api.models)
-            }
-        }
-        next();
-    },
-    stop: function (api, next) {
-        next();
+module.exports =
+  class AssociationsInitializer extends ActionHero.Initializer {
+    constructor () {
+      super()
+      this.name = 'associations'
+      this.loadPriority = 1000
+      this.startPriority = 1002
+      this.stopPriority = 1000
     }
-};
+
+    initialize () { }
+
+    start () {
+      api.models.filter(m => typeof m.associate === 'function')
+        .forEach(m => m.associate(api.models))
+    }
+
+    stop () { }
+  }
+
 ```
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
