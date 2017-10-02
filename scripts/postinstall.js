@@ -4,8 +4,6 @@ const fs = require('fs')
 const path = require('path')
 const mkdirp = require('mkdirp')
 
-const projectConfigDir = path.normalize(process.cwd() + '/../../config/')
-const localConfigFile = path.normalize(path.join(__dirname, '/../config/sequelize.js'))
 const projectConfigFile = path.normalize(process.cwd() + '/../../config/sequelize.js')
 
 const localRcFile = path.normalize(path.join(__dirname, '/../config/.sequelizerc'))
@@ -14,11 +12,6 @@ const projectRcFile = path.normalize(process.cwd() + '/../../.sequelizerc')
 try {
   fs.lstatSync(projectConfigFile)
 } catch (ex) {
-  // unable to stat file because it doesn't exist
-  console.log('copying ' + localConfigFile + ' to ' + projectConfigFile)
-  mkdirp.sync(path.normalize(projectConfigDir))
-  fs.createReadStream(localConfigFile).pipe(fs.createWriteStream(projectConfigFile))
-
   // Only try to copy the files required for cli operations if sequelize.js is being newly created.
   try {
     fs.lstatSync(projectRcFile)
