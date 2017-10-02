@@ -1,5 +1,5 @@
 const ActionHero = require('actionhero')
-const SequelizePlugin = require('../sequelize.js')
+const SequelizePlugin = require('../classes/sequelize.js')
 
 module.exports =
   class SequelizeInitializer extends ActionHero.Initializer {
