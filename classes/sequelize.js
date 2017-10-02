@@ -1,16 +1,13 @@
 const path = require('path')
 const fs = require('fs')
 const Umzug = require('umzug')
-const ActionHero = require('actionhero')
+const { api } = require('actionhero')
 const Sequelize = require('sequelize')
-let config, api
+const config = api.config.sequelize
 
 module.exports =
   class SequelizePlugin {
     constructor () {
-      api = ActionHero.api
-      config = api.config.sequelize
-
       config.logging = api.log
 
       this.sequelize = new Sequelize(
@@ -32,7 +29,7 @@ module.exports =
             () => {
               throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
             }],
-          path: path.join(ActionHero.api.projectRoot, 'migrations'),
+          path: path.join(api.projectRoot, 'migrations'),
           pattern: /\.js$/
         }
       })

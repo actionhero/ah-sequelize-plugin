@@ -1,8 +1,8 @@
-const ActionHero = require('actionhero')
+const { Initializer, api } = require('actionhero')
 const SequelizePlugin = require('../classes/sequelize.js')
 
 module.exports =
-  class SequelizeInitializer extends ActionHero.Initializer {
+  class SequelizeInitializer extends Initializer {
     constructor () {
       super()
       this.name = 'sequelize'
@@ -12,13 +12,13 @@ module.exports =
     }
 
     async initialize () {
-      ActionHero.api.models = {}
-      ActionHero.api.sequelize = new SequelizePlugin()
+      api.models = {}
+      api.sequelize = new SequelizePlugin()
     }
 
     async start () {
-      await ActionHero.api.sequelize.connect()
-      await ActionHero.api.sequelize.autoMigrate()
-      await ActionHero.api.sequelize.loadFixtures()
+      await api.sequelize.connect()
+      await api.sequelize.autoMigrate()
+      await api.sequelize.loadFixtures()
     }
   }
