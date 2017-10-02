@@ -96,7 +96,6 @@ module.exports =
         await this.sequelize.query(query)
       } catch (error) {
         api.log(error, 'warning')
-        console.log(error)
         throw error
       }
     }
@@ -112,10 +111,8 @@ async function checkMetaOldSchema () {
     }
   } catch (error) {
     if (error instanceof Sequelize.DatabaseError) {
-      const noTableMsg = 'No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)'
       if (api.env !== 'test') {
-        api.log(noTableMsg)
-        console.log(noTableMsg)
+        api.log('No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)')
       }
     } else {
       throw error
