@@ -4,15 +4,24 @@
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Notes
-Versions `>=1.0.0` are only compatible with ActionHero versions `>=18.0.0`.
+Versions `1.0.0+` are only compatible with ActionHero versions `18.0.0+`.
 
 For versions compatible with ActionHero versions prior to `18.0.0`, use version [`0.9.0`](https://github.com/actionhero/ah-sequelize-plugin/releases/tag/v0.9.0).
 
 ## Setup
 
 - Install this plugin: `npm install ah-sequelize-plugin --save`
-- Link the plugin: `npm run actionhero link -- --name ah-sequelize-plugin`
 - Add sequelize package: `npm install sequelize --save`
+- Add plugin to your project's `./config/plugins.js`:
+```
+exports['default'] = {
+  plugins: (api) => {
+    return {
+      'ah-sequelize-plugin': { path: __dirname + '/../node_modules/ah-sequelize-plugin' }
+    }
+  }
+}
+```
 
 ### Add supported database packages
 - MySQL: `npm install mysql2 --save`
@@ -165,8 +174,8 @@ module.exports =
     initialize () { }
 
     start () {
-      api.models.filter(m => typeof m.associate === 'function')
-        .forEach(m => m.associate(api.models))
+      Object.entries(api.models).filter(([k, m]) => typeof m.associate === 'function')
+        .forEach(([k, m]) => m.associate(api.models))
     }
 
     stop () { }
