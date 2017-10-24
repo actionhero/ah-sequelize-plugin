@@ -30,7 +30,9 @@ try {
   }
 
   ['models', 'test/fixtures'].forEach(function (f) {
-    mkdirp.sync(path.normalize(process.cwd() + '/../../' + f))
+    let t = path.normalize(process.cwd() + '/../../' + f)
+    console.log('creating ' + t)
+    mkdirp.sync(t)
   })
 } catch (ex) {
   console.log('postinstall script skipped')
