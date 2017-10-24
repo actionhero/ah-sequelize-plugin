@@ -19,8 +19,7 @@
     "postgres"
   ],
   "engines": {
-    "node": ">=8.0.0",
-    "npm": "5.3.x"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
@@ -30,8 +29,8 @@
     "standard": "^10.0.3"
   },
   "peerDependencies": {
-    "sequelize": ">=3.0.0",
-    "actionhero": ">=18.0.0"
+    "sequelize": "^3.0.0",
+    "actionhero": "^18.0.0"
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js"
