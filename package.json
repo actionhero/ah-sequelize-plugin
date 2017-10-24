@@ -19,21 +19,21 @@
     "postgres"
   ],
   "engines": {
-    "node": ">=8.0.0",
-    "npm": "5.3.x"
+    "node": ">=8.0.0"
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
+    "postinstall-build": "^5.0.1",
     "umzug": "^2.0.1"
   },
   "devDependencies": {
     "standard": "^10.0.3"
   },
   "peerDependencies": {
-    "sequelize": ">=3.0.0",
-    "actionhero": ">=18.0.0"
+    "sequelize": "^3.0.0",
+    "actionhero": "^18.0.0"
   },
   "scripts": {
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "postinstall-build --only-as-dependency scripts/postinstall.js"
   }
 }
