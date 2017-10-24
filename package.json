@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "postinstall-build": "^5.0.1",
     "umzug": "^2.0.1"
   },
   "devDependencies": {
@@ -34,6 +33,6 @@
     "actionhero": "^18.0.0"
   },
   "scripts": {
-    "postinstall": "postinstall-build --only-as-dependency node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js"
   }
 }
