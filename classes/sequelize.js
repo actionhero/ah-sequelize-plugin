@@ -8,7 +8,8 @@ const config = api.config.sequelize
 module.exports =
   class SequelizePlugin {
     constructor () {
-      config.logging = config.logging != false ? config.logging || api.log : () => { }
+      config.logging = config.logging !== false ? config.logging || api.log : () => { }
+      config.operatorsAliases = typeof config.operatorsAliases === 'boolean' ? config.operatorsAliases : false
 
       this.sequelize = new Sequelize(
         config.database,
