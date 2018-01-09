@@ -158,29 +158,19 @@ module.exports = function (sequelize, DataTypes, api) {
 Then you create an `associations.js` initializer within your project which might look like this:
 
 ```javascript
-const ActionHero = require('actionhero')
-const api = ActionHero.api
+const { Initializer, api } = require('actionhero')
 
-module.exports =
-  class AssociationsInitializer extends ActionHero.Initializer {
-    constructor () {
-      super()
-      this.name = 'associations'
-      this.loadPriority = 1000
-      this.startPriority = 1002
-      this.stopPriority = 1000
-    }
-
-    initialize () { }
-
-    start () {
-      Object.entries(api.models).filter(([k, m]) => typeof m.associate === 'function')
-        .forEach(([k, m]) => m.associate(api.models))
-    }
-
-    stop () { }
+module.exports = class AssociationsInitializer extends Initializer {
+  constructor () {
+    super()
+    this.name = 'AssociationsInitializer'
   }
 
+  start () {
+    Object.entries(api.models).filter(([k, m]) => typeof m.associate === 'function')
+      .forEach(([k, m]) => m.associate(api.models))
+  }
+}
 ```
 
 ## [Fixtures](https://github.com/domasx2/sequelize-fixtures)
