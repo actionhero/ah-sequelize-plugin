@@ -97,6 +97,10 @@ module.exports =
         throw error
       }
     }
+
+    async close () {
+      return this.sequelize.close()
+    }
   }
 
 async function checkMetaOldSchema () {
