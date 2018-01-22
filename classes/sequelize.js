@@ -39,14 +39,21 @@ module.exports =
     async connect () {
       const importModelsFromDirectory = (dir) => {
         fs.readdirSync(dir).forEach((file) => {
-          if (fs.statSync(path.join(dir, file)).isDirectory()) {
-            return importModelsFromDirectory(path.join(dir, file))
+          const filename = path.join(dir, file)
+          if (fs.statSync(filename).isDirectory()) {
+            return importModelsFromDirectory(filename)
           }
           if (path.extname(file) !== '.js') return
           var nameParts = file.split('/')
           var name = nameParts[(nameParts.length - 1)].split('.')[0]
-          var modelFunc = currySchemaFunc(require(path.join(dir, file)))
+          var modelFunc = currySchemaFunc(require(filename))
           this.sequelize.import(name, modelFunc)
+          api.watchFileAndAct(filename, async () => {
+            api.log(`*** Rebooting due to model change (${filename}) ***`, 'info')
+            delete require.cache[require.resolve(filename)]
+            delete this.sequelize.importCache[filename]
+            await api.commands.restart()
+          })
         })
       }
 
