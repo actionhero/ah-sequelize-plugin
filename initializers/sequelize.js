@@ -21,4 +21,8 @@ module.exports =
       await api.sequelize.autoMigrate()
       await api.sequelize.loadFixtures()
     }
+
+    async stop () {
+      await api.sequelize.close()
+    }
   }
