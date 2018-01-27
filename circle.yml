@@ -5,6 +5,6 @@ machine:
   node:
     version: 8
 
-databse:
+database:
   override:
     - mysql -e 'create database test_db' -u root
