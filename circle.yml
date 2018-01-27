@@ -1,6 +1,4 @@
 machine:
-  environment:
-    maxMemoryAlloted: 500
   services:
     - redis
     - mysql
