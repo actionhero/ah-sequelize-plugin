@@ -1,0 +1,12 @@
+machine:
+  environment:
+    maxMemoryAlloted: 500
+  services:
+    - redis
+    - mysql
+  node:
+    version: 8
+
+databse:
+  override:
+    - mysql -e 'create database test_db' -u root

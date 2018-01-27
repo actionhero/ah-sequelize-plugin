@@ -33,20 +33,22 @@ exports.development = exports.default.sequelize()
 //     }
 //   }
 
-// Example test configuration (using sqlite in-memory)
+// Example test configuration
 
-// exports.test = {
-//   sequelize: (api) => {
-//     return {
-//       'autoMigrate': true,
-//       'loadFixtures': false,
-//       'logging': false,
-//       'dialect': 'sqlite',
-//       'storage': ':memory:',
-//       'host': 'localhost'
-//     }
-//   }
-// }
+exports.test = {
+  sequelize: (api) => {
+    return {
+      'autoMigrate': true,
+      'loadFixtures': false,
+      'database': 'TEST_DB',
+      'dialect': 'mysql',
+      'port': 3306,
+      'host': '127.0.0.1',
+      'username': 'root',
+      'password': ''
+    }
+  }
+}
 
 // You can define even more elaborate configurations (including replication).
 // See http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html for more information
