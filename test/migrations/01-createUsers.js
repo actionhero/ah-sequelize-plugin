@@ -1,6 +1,6 @@
 module.exports = {
   up: async function (migration, DataTypes) {
-    await migration.createTable('users', {
+    await migration.createTable('Users', {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
