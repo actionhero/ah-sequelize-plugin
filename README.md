@@ -15,7 +15,8 @@ For versions compatible with ActionHero versions prior to `18.0.0`, use version 
 - Install this plugin: `npm install ah-sequelize-plugin --save`
 - Add sequelize package: `npm install sequelize --save`
 - Add plugin to your project's `./config/plugins.js`:
-```
+
+```javascript
 exports['default'] = {
   plugins: (api) => {
     return {
