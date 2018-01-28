@@ -1,6 +1,8 @@
 ![plugin](https://i.imgur.com/nd1btLt.png)
 # ah-sequelize-plugin
 
+[![CircleCI](https://circleci.com/gh/actionhero/ah-sequelize-plugin.svg?style=svg)](https://circleci.com/gh/actionhero/ah-sequelize-plugin)
+
 This plugin will use the sequelize orm to create `api.models` which contain your sequelize models.
 
 ## Notes

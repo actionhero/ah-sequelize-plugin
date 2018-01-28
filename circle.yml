@@ -1,0 +1,10 @@
+machine:
+  services:
+    - redis
+    - mysql
+  node:
+    version: 8
+
+database:
+  override:
+    - mysql -e 'CREATE DATABASE TEST_DB' -u root
