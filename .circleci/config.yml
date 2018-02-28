@@ -6,14 +6,14 @@ refrences:
     key: package-cache-{{ checksum "package.json" }}
 
   images: &images
-    - image: circleci/node:8
-    - image: redis:4
-    - image: circleci/mysql:5
+    docker:
+      - image: circleci/node:8
+      - image: redis:4
+      - image: circleci/mysql:5
 
 jobs:
   build:
-    docker:
-      <<: *images
+    <<: *images
     steps:
       - checkout
       - restore_cache:
@@ -30,8 +30,7 @@ jobs:
             - ./node_modules
 
   test:
-    docker:
-      <<: *images
+    <<: *images
     steps:
       - checkout
       - restore_cache:
