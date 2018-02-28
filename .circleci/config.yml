@@ -42,8 +42,16 @@ jobs:
           name: test-reporter-setup
           command: mkdir ./junit
       - run:
-          name: instll mysql client
+          name: install mysql client
           command: sudo apt-get install mysql-client
+      - run:
+          name: install dockerize
+          command: wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSION/dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && sudo tar -C /usr/local/bin -xzvf dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz && rm dockerize-linux-amd64-$DOCKERIZE_VERSION.tar.gz
+          environment:
+            DOCKERIZE_VERSION: v0.6.0
+      - run:
+          name: wait for mysql
+          command: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run:
           name: create database
           command: mysql -e 'CREATE DATABASE TEST_DB' -u root --host 127.0.0.1
