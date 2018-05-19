@@ -3,7 +3,7 @@
   "name": "ah-sequelize-plugin",
   "license": "MIT",
   "description": "Use Sequelize in ActionHero",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
@@ -27,13 +27,13 @@
     "umzug": "^2.0.1"
   },
   "devDependencies": {
-    "standard": "^10.0.3",
-    "sequelize": ">=3.0.0",
-    "actionhero": ">=18.0.0",
+    "actionhero": "^19.0.1",
     "chai": "^4.1.2",
     "dirty-chai": "^2.0.1",
-    "mocha": "^5.0.0",
-    "mysql2": "^1.5.1"
+    "mocha": "^5.2.0",
+    "mysql2": "^1.5.3",
+    "sequelize": "^4.37.8",
+    "standard": "^11.0.1"
   },
   "peerDependencies": {
     "sequelize": ">=3.0.0",
