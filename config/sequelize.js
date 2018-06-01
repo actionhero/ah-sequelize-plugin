@@ -33,6 +33,10 @@ exports.development = exports.default.sequelize()
 //     }
 //   }
 
+//   mergeObj.sequelize = overlayFn.sequelize
+//   return mergeObj
+// }
+
 // Example test configuration
 
 exports.test = {
