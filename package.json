@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "mkdirp": "^0.5.1",
-    "umzug": "^2.0.1"
+    "umzug": "^2.1.0"
   },
   "devDependencies": {
     "actionhero": "^19.0.1",
