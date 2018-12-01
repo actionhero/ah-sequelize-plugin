@@ -10,6 +10,8 @@ process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionher
 const PACKAGE_PATH = path.join(__dirname, '..')
 const modelsPath = path.join(process.env.PROJECT_ROOT, 'models')
 const migrationsPath = path.join(process.env.PROJECT_ROOT, 'migrations')
+const pluginsPath = path.join(process.env.PROJECT_ROOT, 'plugins')
+const testPluginPath = path.join(pluginsPath, 'test-plugin')
 
 const actionhero = new ActionHero.Process()
 let api
@@ -44,6 +46,16 @@ describe('ah-sequelize-plugin', function () {
     // copy migration files
     if (!fs.existsSync(migrationsPath)) { fs.mkdirSync(migrationsPath) }
     await CopyFile(path.join(PACKAGE_PATH, 'test', 'migrations', '01-createUsers.js'), path.join(process.env.PROJECT_ROOT, 'migrations', '01-createUsers.js'))
+
+    // copy plugin model files
+    if (!fs.existsSync(pluginsPath)) { fs.mkdirSync(pluginsPath) }
+    if (!fs.existsSync(testPluginPath)) { fs.mkdirSync(testPluginPath) }
+    if (!fs.existsSync(path.join(testPluginPath, 'models'))) { fs.mkdirSync(path.join(testPluginPath, 'models')) }
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'plugins', 'test-plugin', 'models', 'post.js'), path.join(process.env.PROJECT_ROOT, 'plugins', 'test-plugin', 'models', 'post.js'))
+
+    // copy plugin migration files
+    if (!fs.existsSync(path.join(testPluginPath, 'migrations'))) { fs.mkdirSync(path.join(testPluginPath, 'migrations')) }
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'plugins', 'test-plugin', 'migrations', '02-createPosts.js'), path.join(process.env.PROJECT_ROOT, 'plugins', 'test-plugin', 'migrations', '02-createPosts.js'))
   })
 
   before(async () => { api = await actionhero.start({ configChanges }) })

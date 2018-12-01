@@ -49,7 +49,8 @@ exports.test = {
       'port': 3306,
       'host': '127.0.0.1',
       'username': 'root',
-      'password': ''
+      'password': '',
+      'modelsDir': ['models', 'plugins/test-plugin/models']
     }
   }
 }
