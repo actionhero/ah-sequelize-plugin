@@ -15,7 +15,7 @@ const actionhero = new ActionHero.Process()
 let api
 
 const configChanges = {
-  plugins: {'ah-sequelize-plugin': { path: PACKAGE_PATH }}
+  plugins: { 'ah-sequelize-plugin': { path: PACKAGE_PATH } }
 }
 
 const CopyFile = async (src, dest) => {
@@ -29,7 +29,9 @@ const CopyFile = async (src, dest) => {
   })
 }
 
-describe('ah-sequelize-plugin', () => {
+describe('ah-sequelize-plugin', function () {
+  this.timeout(100000)
+
   before(async () => {
     // copy configuration files
     await CopyFile(path.join(PACKAGE_PATH, 'config', 'sequelize.js'), path.join(process.env.PROJECT_ROOT, 'config', 'sequelize.js'))
@@ -44,9 +46,9 @@ describe('ah-sequelize-plugin', () => {
     await CopyFile(path.join(PACKAGE_PATH, 'test', 'migrations', '01-createUsers.js'), path.join(process.env.PROJECT_ROOT, 'migrations', '01-createUsers.js'))
   })
 
-  before(async () => { api = await actionhero.start({configChanges}) })
-  before(async () => { await api.models.User.truncate({force: true}) })
-  after(async () => { await api.models.User.truncate({force: true}) })
+  before(async () => { api = await actionhero.start({ configChanges }) })
+  before(async () => { await api.models.User.truncate({ force: true }) })
+  after(async () => { await api.models.User.truncate({ force: true }) })
   after(async () => { await actionhero.stop() })
 
   it('should have booted an ActionHero server', () => {
@@ -72,12 +74,12 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('can read saved models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     expect(person.name).to.equal('test person')
   })
 
   it('can update saved models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     person.name = 'a new name'
     await person.save()
     await person.reload()
@@ -85,14 +87,14 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('auto-adds timestamp columns to models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     expect(person.createdAt).to.be.below(new Date())
     expect(person.updatedAt).to.be.below(new Date())
     expect(person.deletedAt).to.not.exist()
   })
 
   it('can use instance methods on models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     const apiData = person.apiData()
     expect(apiData.email).not.to.exist()
     expect(apiData.name).to.equal('a new name')
@@ -126,15 +128,15 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('can delete a model', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     await person.destroy()
     let count = await api.models.User.count()
     expect(count).to.equal(0)
   })
 
   it('can *really* delete a model', async () => {
-    const person = await api.models.User.find({paranoid: false, where: {email: 'hello@example.com'}})
-    await person.destroy({force: true})
+    const person = await api.models.User.findOne({ paranoid: false, where: { email: 'hello@example.com' } })
+    await person.destroy({ force: true })
     let count = await api.models.User.count()
     expect(count).to.equal(0)
   })

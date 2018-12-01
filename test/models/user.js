@@ -19,9 +19,9 @@ module.exports = function (sequelize, DataTypes, api) {
 
   // Attach Class methods
   model.countEvans = function () {
-    return model.count({where: {
+    return model.count({ where: {
       name: { [sequelize.Op.like]: '%evan%' }
-    }})
+    } })
   }
 
   // Attach Instance methods
