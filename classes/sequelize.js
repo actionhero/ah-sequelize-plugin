@@ -36,7 +36,7 @@ module.exports =
       })
     }
 
-    async importModelsFromDirectory (dir) {
+    importModelsFromDirectory (dir) {
       (Array.isArray(dir) ? dir : [dir])
         .map(dir => path.normalize(path.join(api.projectRoot, dir)))
         .forEach(dir => {
@@ -63,7 +63,7 @@ module.exports =
     }
 
     async connect () {
-      await this.importModelsFromDirectory(config.modelsDir || 'models')
+      this.importModelsFromDirectory(config.modelsDir || 'models')
       api.models = this.sequelize.models
       await this.test()
     }
