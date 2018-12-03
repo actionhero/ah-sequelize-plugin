@@ -18,22 +18,31 @@ module.exports =
         config
       )
 
-      this.umzug = new Umzug({
-        storage: 'sequelize',
-        storageOptions: {
-          sequelize: this.sequelize
-        },
-        migrations: {
-          params: [
-            this.sequelize.getQueryInterface(),
-            this.sequelize.constructor,
-            () => {
-              throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
-            }],
-          path: path.join(api.projectRoot, 'migrations'),
-          pattern: /\.js$/
-        }
-      })
+      this.umzug = []
+      this.importMigrationsFromDirectory(config.migrationsDir || ['migrations'])
+    }
+
+    importMigrationsFromDirectory (dir) {
+      (Array.isArray(dir) ? dir : [dir])
+        .map(dir => path.normalize(path.join(api.projectRoot, dir)))
+        .forEach(dir => {
+          this.umzug.push(new Umzug({
+            storage: 'sequelize',
+            storageOptions: {
+              sequelize: this.sequelize
+            },
+            migrations: {
+              params: [
+                this.sequelize.getQueryInterface(),
+                this.sequelize.constructor,
+                () => {
+                  throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
+                }],
+              path: dir,
+              pattern: /\.js$/
+            }
+          }))
+        })
     }
 
     importModelsFromDirectory (dir) {
@@ -82,19 +91,25 @@ module.exports =
         : options
 
       await checkMetaOldSchema()
-      await this.umzug.execute(options)
+      for (const umzug of this.umzug) {
+        await umzug.execute(options)
+      }
     }
 
     async autoMigrate () {
       if (config.autoMigrate === null || config.autoMigrate === undefined || config.autoMigrate) {
         await checkMetaOldSchema()
-        await this.umzug.up()
+        for (const umzug of this.umzug) {
+          await umzug.up()
+        }
       }
     }
 
     async migrateUndo () {
       await checkMetaOldSchema()
-      await this.umzug.down()
+      for (const umzug of this.umzug) {
+        await umzug.down()
+      }
     }
 
     async test () {

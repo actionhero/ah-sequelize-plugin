@@ -36,7 +36,7 @@ describe('ah-sequelize-plugin', function () {
 
   before(async () => {
     // copy configuration files
-    await CopyFile(path.join(PACKAGE_PATH, 'config', 'sequelize.js'), path.join(process.env.PROJECT_ROOT, 'config', 'sequelize.js'))
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'config', 'sequelize.js'), path.join(process.env.PROJECT_ROOT, 'config', 'sequelize.js'))
     await CopyFile(path.join(PACKAGE_PATH, 'config', '.sequelizerc'), path.join(process.env.PROJECT_ROOT, 'sequelizerc'))
 
     // copy model files
@@ -77,7 +77,8 @@ describe('ah-sequelize-plugin', function () {
     const person = new api.models.User()
     person.email = 'hello@example.com'
     person.name = 'test person'
-    await person.save()
+    let { error } = await person.save()
+    expect(error).to.not.exist()
   })
 
   it('can count newly saved models', async () => {
@@ -150,6 +151,32 @@ describe('ah-sequelize-plugin', function () {
     const person = await api.models.User.findOne({ paranoid: false, where: { email: 'hello@example.com' } })
     await person.destroy({ force: true })
     let count = await api.models.User.count()
+    expect(count).to.equal(0)
+  })
+
+  it('should have loaded plugin models', async () => {
+    expect(api.models.Post).to.exist()
+    let count = await api.models.Post.count()
+    expect(count).to.equal(0)
+  })
+
+  it('can create a plugin model instance (indicating the databse was migrated for plugin as well)', async () => {
+    const post = new api.models.Post()
+    post.title = 'You\'ll never guess what happened next!'
+    let { error } = await post.save()
+    expect(error).to.not.exist()
+  })
+
+  it('can count newly saved plugin models', async () => {
+    let count = await api.models.Post.count()
+    expect(count).to.equal(1)
+  })
+
+  it('can delete a plugin model', async () => {
+    const post = await api.models.Post.findOne({ where: { title: 'You\'ll never guess what happened next!' } })
+    let { error } = await post.destroy()
+    expect(error).to.not.exist()
+    let count = await api.models.Post.count()
     expect(count).to.equal(0)
   })
 })
