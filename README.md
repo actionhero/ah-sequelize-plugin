@@ -42,6 +42,28 @@ For additional information on supported databases visit the [Sequelize Docs](htt
 
 A `./config/sequelize.js` file will be created which will store your database configuration.  Read commented sections of configuration file for examples of multi-environment configurations.
 
+To override the default location for models and/or migrations, use the `modelsDir` and `migrationsDir` configuration parameter with an array of paths relative to the project root.
+
+```javascript
+exports.default = {
+  sequelize: (api) => {
+    return {
+      'autoMigrate': true,
+      'loadFixtures': false,
+      'database': 'DEVELOPMENT_DB',
+      'dialect': 'mysql',
+      'port': 3306,
+      'host': '127.0.0.1',
+      'username': 'root',
+      'password': '',
+      'modelsDir': ['models', 'plugins/acl-plugin/models'],
+      'migrationsDir': ['migrations', 'plugins/test-plugin/migrations']
+    }
+  }
+}
+
+```
+
 ## [Models](http://docs.sequelizejs.com/en/latest/api/models)
 
 Use the exports form of sequelize models in `./models` with the file name matching that of the model, IE:
