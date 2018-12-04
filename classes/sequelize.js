@@ -18,47 +18,61 @@ module.exports =
         config
       )
 
-      this.umzug = new Umzug({
-        storage: 'sequelize',
-        storageOptions: {
-          sequelize: this.sequelize
-        },
-        migrations: {
-          params: [
-            this.sequelize.getQueryInterface(),
-            this.sequelize.constructor,
-            () => {
-              throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
-            }],
-          path: path.join(api.projectRoot, 'migrations'),
-          pattern: /\.js$/
-        }
-      })
+      this.umzug = []
+      this.importMigrationsFromDirectory(config.migrationsDir || ['migrations'])
+    }
+
+    importMigrationsFromDirectory (dir) {
+      (Array.isArray(dir) ? dir : [dir])
+        .map(dir => path.normalize(path.join(api.projectRoot, dir)))
+        .forEach(dir => {
+          this.umzug.push(new Umzug({
+            storage: 'sequelize',
+            storageOptions: {
+              sequelize: this.sequelize
+            },
+            migrations: {
+              params: [
+                this.sequelize.getQueryInterface(),
+                this.sequelize.constructor,
+                () => {
+                  throw new Error('Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.')
+                }],
+              path: dir,
+              pattern: /\.js$/
+            }
+          }))
+        })
+    }
+
+    importModelsFromDirectory (dir) {
+      (Array.isArray(dir) ? dir : [dir])
+        .map(dir => path.normalize(path.join(api.projectRoot, dir)))
+        .forEach(dir => {
+          fs.readdirSync(dir).forEach(file => {
+            const filename = path.join(dir, file)
+            if (fs.statSync(filename).isDirectory()) {
+              return this.importModelsFromDirectory(filename)
+            }
+            if (path.extname(file) !== '.js') return
+            let nameParts = file.split('/')
+            let name = nameParts[(nameParts.length - 1)].split('.')[0]
+            let modelFunc = currySchemaFunc(require(filename))
+            this.sequelize.import(name, modelFunc)
+
+            // watch model files for changes
+            api.watchFileAndAct(filename, async () => {
+              api.log(`*** Rebooting due to model change (${filename}) ***`, 'info')
+              delete require.cache[require.resolve(filename)]
+              delete this.sequelize.importCache[filename]
+              await api.commands.restart()
+            })
+          })
+        })
     }
 
     async connect () {
-      const importModelsFromDirectory = (dir) => {
-        fs.readdirSync(dir).forEach((file) => {
-          const filename = path.join(dir, file)
-          if (fs.statSync(filename).isDirectory()) {
-            return importModelsFromDirectory(filename)
-          }
-          if (path.extname(file) !== '.js') return
-          var nameParts = file.split('/')
-          var name = nameParts[(nameParts.length - 1)].split('.')[0]
-          var modelFunc = currySchemaFunc(require(filename))
-          this.sequelize.import(name, modelFunc)
-          api.watchFileAndAct(filename, async () => {
-            api.log(`*** Rebooting due to model change (${filename}) ***`, 'info')
-            delete require.cache[require.resolve(filename)]
-            delete this.sequelize.importCache[filename]
-            await api.commands.restart()
-          })
-        })
-      }
-
-      let dir = path.normalize(path.join(api.projectRoot, 'models'))
-      importModelsFromDirectory(dir)
+      this.importModelsFromDirectory(config.modelsDir || 'models')
       api.models = this.sequelize.models
       await this.test()
     }
@@ -77,19 +91,25 @@ module.exports =
         : options
 
       await checkMetaOldSchema()
-      await this.umzug.execute(options)
+      for (const umzug of this.umzug) {
+        await umzug.execute(options)
+      }
     }
 
     async autoMigrate () {
       if (config.autoMigrate === null || config.autoMigrate === undefined || config.autoMigrate) {
         await checkMetaOldSchema()
-        await this.umzug.up()
+        for (const umzug of this.umzug) {
+          await umzug.up()
+        }
       }
     }
 
     async migrateUndo () {
       await checkMetaOldSchema()
-      await this.umzug.down()
+      for (const umzug of this.umzug) {
+        await umzug.down()
+      }
     }
 
     async test () {

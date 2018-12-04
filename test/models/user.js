@@ -1,7 +1,7 @@
 module.exports = function (sequelize, DataTypes, api) {
   const model = sequelize.define('User', {
     id: {
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true
     },
@@ -19,9 +19,11 @@ module.exports = function (sequelize, DataTypes, api) {
 
   // Attach Class methods
   model.countEvans = function () {
-    return model.count({where: {
-      name: { [sequelize.Op.like]: '%evan%' }
-    }})
+    return model.count({
+      where: {
+        name: { [sequelize.Op.like]: '%evan%' }
+      }
+    })
   }
 
   // Attach Instance methods

@@ -10,12 +10,14 @@ process.env.PROJECT_ROOT = path.join(__dirname, '..', 'node_modules', 'actionher
 const PACKAGE_PATH = path.join(__dirname, '..')
 const modelsPath = path.join(process.env.PROJECT_ROOT, 'models')
 const migrationsPath = path.join(process.env.PROJECT_ROOT, 'migrations')
+const pluginsPath = path.join(process.env.PROJECT_ROOT, 'plugins')
+const testPluginPath = path.join(pluginsPath, 'test-plugin')
 
 const actionhero = new ActionHero.Process()
 let api
 
 const configChanges = {
-  plugins: {'ah-sequelize-plugin': { path: PACKAGE_PATH }}
+  plugins: { 'ah-sequelize-plugin': { path: PACKAGE_PATH } }
 }
 
 const CopyFile = async (src, dest) => {
@@ -29,10 +31,12 @@ const CopyFile = async (src, dest) => {
   })
 }
 
-describe('ah-sequelize-plugin', () => {
+describe('ah-sequelize-plugin', function () {
+  this.timeout(100000)
+
   before(async () => {
     // copy configuration files
-    await CopyFile(path.join(PACKAGE_PATH, 'config', 'sequelize.js'), path.join(process.env.PROJECT_ROOT, 'config', 'sequelize.js'))
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'config', 'sequelize.js'), path.join(process.env.PROJECT_ROOT, 'config', 'sequelize.js'))
     await CopyFile(path.join(PACKAGE_PATH, 'config', '.sequelizerc'), path.join(process.env.PROJECT_ROOT, 'sequelizerc'))
 
     // copy model files
@@ -42,11 +46,21 @@ describe('ah-sequelize-plugin', () => {
     // copy migration files
     if (!fs.existsSync(migrationsPath)) { fs.mkdirSync(migrationsPath) }
     await CopyFile(path.join(PACKAGE_PATH, 'test', 'migrations', '01-createUsers.js'), path.join(process.env.PROJECT_ROOT, 'migrations', '01-createUsers.js'))
+
+    // copy plugin model files
+    if (!fs.existsSync(pluginsPath)) { fs.mkdirSync(pluginsPath) }
+    if (!fs.existsSync(testPluginPath)) { fs.mkdirSync(testPluginPath) }
+    if (!fs.existsSync(path.join(testPluginPath, 'models'))) { fs.mkdirSync(path.join(testPluginPath, 'models')) }
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'plugins', 'test-plugin', 'models', 'post.js'), path.join(process.env.PROJECT_ROOT, 'plugins', 'test-plugin', 'models', 'post.js'))
+
+    // copy plugin migration files
+    if (!fs.existsSync(path.join(testPluginPath, 'migrations'))) { fs.mkdirSync(path.join(testPluginPath, 'migrations')) }
+    await CopyFile(path.join(PACKAGE_PATH, 'test', 'plugins', 'test-plugin', 'migrations', '02-createPosts.js'), path.join(process.env.PROJECT_ROOT, 'plugins', 'test-plugin', 'migrations', '02-createPosts.js'))
   })
 
-  before(async () => { api = await actionhero.start({configChanges}) })
-  before(async () => { await api.models.User.truncate({force: true}) })
-  after(async () => { await api.models.User.truncate({force: true}) })
+  before(async () => { api = await actionhero.start({ configChanges }) })
+  before(async () => { await api.models.User.truncate({ force: true }) })
+  after(async () => { await api.models.User.truncate({ force: true }) })
   after(async () => { await actionhero.stop() })
 
   it('should have booted an ActionHero server', () => {
@@ -63,7 +77,8 @@ describe('ah-sequelize-plugin', () => {
     const person = new api.models.User()
     person.email = 'hello@example.com'
     person.name = 'test person'
-    await person.save()
+    let { error } = await person.save()
+    expect(error).to.not.exist()
   })
 
   it('can count newly saved models', async () => {
@@ -72,12 +87,12 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('can read saved models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     expect(person.name).to.equal('test person')
   })
 
   it('can update saved models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     person.name = 'a new name'
     await person.save()
     await person.reload()
@@ -85,14 +100,14 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('auto-adds timestamp columns to models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     expect(person.createdAt).to.be.below(new Date())
     expect(person.updatedAt).to.be.below(new Date())
     expect(person.deletedAt).to.not.exist()
   })
 
   it('can use instance methods on models', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     const apiData = person.apiData()
     expect(apiData.email).not.to.exist()
     expect(apiData.name).to.equal('a new name')
@@ -126,16 +141,42 @@ describe('ah-sequelize-plugin', () => {
   })
 
   it('can delete a model', async () => {
-    const person = await api.models.User.find({where: {email: 'hello@example.com'}})
+    const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     await person.destroy()
     let count = await api.models.User.count()
     expect(count).to.equal(0)
   })
 
   it('can *really* delete a model', async () => {
-    const person = await api.models.User.find({paranoid: false, where: {email: 'hello@example.com'}})
-    await person.destroy({force: true})
+    const person = await api.models.User.findOne({ paranoid: false, where: { email: 'hello@example.com' } })
+    await person.destroy({ force: true })
     let count = await api.models.User.count()
+    expect(count).to.equal(0)
+  })
+
+  it('should have loaded plugin models', async () => {
+    expect(api.models.Post).to.exist()
+    let count = await api.models.Post.count()
+    expect(count).to.equal(0)
+  })
+
+  it('can create a plugin model instance (indicating the databse was migrated for plugin as well)', async () => {
+    const post = new api.models.Post()
+    post.title = 'You\'ll never guess what happened next!'
+    let { error } = await post.save()
+    expect(error).to.not.exist()
+  })
+
+  it('can count newly saved plugin models', async () => {
+    let count = await api.models.Post.count()
+    expect(count).to.equal(1)
+  })
+
+  it('can delete a plugin model', async () => {
+    const post = await api.models.Post.findOne({ where: { title: 'You\'ll never guess what happened next!' } })
+    let { error } = await post.destroy()
+    expect(error).to.not.exist()
+    let count = await api.models.Post.count()
     expect(count).to.equal(0)
   })
 })
