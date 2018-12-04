@@ -34,7 +34,7 @@ exports['default'] = {
 
 For additional information on supported databases visit the [Sequelize Docs](http://docs.sequelizejs.com/manual/installation/getting-started).
 
-### Add optional depenedencies
+### Add optional dependencies
 - For automatic fixures: `npm install sequelize-fixtures --save`
 - For Sequelize CLI: `npm install --save-dev sequelize-cli`
 
@@ -56,8 +56,8 @@ exports.default = {
       'host': '127.0.0.1',
       'username': 'root',
       'password': '',
-      'modelsDir': ['models', 'plugins/acl-plugin/models'],
-      'migrationsDir': ['migrations', 'plugins/test-plugin/migrations']
+      'modelsDir': ['models', 'plugins/acl-plugin/models'], // Default: ['models']
+      'migrationsDir': ['migrations', 'plugins/acl-plugin/migrations'] // Default: ['migrations']
     }
   }
 }
@@ -202,4 +202,4 @@ module.exports = class AssociationsInitializer extends Initializer {
 
 We use the `sequelize-fixtures` package to load in JSON-defined fixtures in the test NODE\_ENV.  Store your fixtures in `./test/fixtures/*.json` or `./test/fixtures/*.yml`.
 
-By default, `ah-sequelize-plugin` will **not** automatically load your fixtures when Actionhero starts up. You can enable this behaviour by adding `loadFixtures: true` to your sequelize config.
+By default, `ah-sequelize-plugin` will **not** automatically load your fixtures when Actionhero starts up. You can enable this behavior by adding `loadFixtures: true` to your sequelize config.
