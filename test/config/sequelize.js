@@ -1,5 +1,5 @@
 exports.test = {
-  sequelize: (api) => {
+  sequelize: () => {
     return {
       'autoMigrate': true,
       'loadFixtures': false,

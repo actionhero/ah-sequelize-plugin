@@ -46,7 +46,7 @@ To override the default location for models and/or migrations, use the `modelsDi
 
 ```javascript
 exports.default = {
-  sequelize: (api) => {
+  sequelize: () => {
     return {
       'autoMigrate': true,
       'loadFixtures': false,
@@ -58,6 +58,23 @@ exports.default = {
       'password': '',
       'modelsDir': ['models', 'plugins/acl-plugin/models'], // Default: ['models']
       'migrationsDir': ['migrations', 'plugins/acl-plugin/migrations'] // Default: ['migrations']
+    }
+  }
+}
+
+```
+
+#### Logging
+
+The `logging` configuration parameter accepts either a `false` value, or a function which accepts a log value of type `string` and a event level value of type `string` (ex: `console.log`, `api.log`).  If you are passing in a function for the logging parameter, you must also set the `_toExpand` config parameter to `false` in order for the logging function to not be called during ActionHero startup.
+
+```javascript
+exports.test = {
+  sequelize: () => {
+    return {
+      '_toExpand': false,
+      'database': 'TEST_DB',
+      'logging': console.log
     }
   }
 }
