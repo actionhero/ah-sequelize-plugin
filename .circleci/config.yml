@@ -9,7 +9,6 @@ refrences:
     docker:
       - image: circleci/node:8
       - image: redis:4
-      - image: circleci/mysql:5
 
 jobs:
   build:
