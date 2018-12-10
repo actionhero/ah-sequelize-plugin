@@ -32,8 +32,8 @@
     "cross-env": "^5.2.0",
     "dirty-chai": "^2.0.1",
     "mocha": "^5.2.0",
-    "mysql2": "^1.6.4",
     "sequelize": "^4.41.2",
+    "sqlite3": "^4.0.4",
     "standard": "^12.0.1"
   },
   "peerDependencies": {
