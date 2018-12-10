@@ -62,7 +62,7 @@ module.exports =
 
             // watch model files for changes
             api.watchFileAndAct(filename, async () => {
-              api.log(`*** Rebooting due to model change (${filename}) ***`, 'info')
+              config.logging(`*** Rebooting due to model change (${filename}) ***`, 'info')
               delete require.cache[require.resolve(filename)]
               delete this.sequelize.importCache[filename]
               await api.commands.restart()
@@ -80,7 +80,7 @@ module.exports =
     async loadFixtures () {
       if (config.loadFixtures) {
         const SequelizeFixtures = require('sequelize-fixtures')
-        let options = { log: (api.config.logging) ? console.log : function () { } }
+        let options = { log: config.logging }
         await SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, options)
       }
     }
@@ -120,7 +120,7 @@ module.exports =
       try {
         await this.sequelize.query(query)
       } catch (error) {
-        api.log(error, 'warning')
+        config.logging(error, 'warning')
         throw error
       }
     }
@@ -141,7 +141,7 @@ async function checkMetaOldSchema () {
   } catch (error) {
     if (error instanceof Sequelize.DatabaseError) {
       if (api.env !== 'test') {
-        api.log('No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)')
+        config.logging('No SequelizeMeta table found - creating new table. (Make sure you have \'migrations\' folder in your projectRoot!)')
       }
     } else {
       throw error
