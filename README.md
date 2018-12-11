@@ -70,6 +70,7 @@ The `logging` configuration parameter accepts either a `false` value, or a funct
 
 ```javascript
 exports.test = {
+  ...exports.default.sequelize(),
   sequelize: () => {
     return {
       '_toExpand': false,

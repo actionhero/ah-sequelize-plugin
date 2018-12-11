@@ -14,23 +14,24 @@ exports.default = {
 }
 
 exports.test = {
+  ...exports.default.sequelize(),
   sequelize: () => {
     return {
-      'database': 'TEST_DB'
+      'dialect': 'sqlite',
+      'storage': ':memory:',
+      'host': 'localhost'
     }
   }
 }
 
-// For sequelize-cli
-// Add to the exports below, if you have setup additional environment-specific settings
 exports.development = { ...exports.default.sequelize() }
-exports.test = { ...exports.default.sequelize(), ...exports.test.sequelize() }
 
 // You can define even more elaborate configurations (including replication).
 // See http://sequelize.readthedocs.org/en/latest/api/sequelize/index.html for more information
 // For example:
 
 // exports.production = {
+//   ...exports.default.sequelize(),
 //   sequelize: function(){
 //     return {
 //       "autoMigrate" : false,
