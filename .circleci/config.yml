@@ -3,11 +3,11 @@ version: 2
 refrences:
 
   cache-options: &cache-options
-    key: package-cache-{{ checksum "package.json" }}
+    key: package-cache-{{ .Branch }}-{{ .Revision }}
 
   images: &images
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
       - image: redis:4
 
 jobs:

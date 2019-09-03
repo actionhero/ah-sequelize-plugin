@@ -14,8 +14,8 @@ module.exports = {
     })
 
     await migration.addIndex('Users', ['email'], {
-      indexName: 'email_index',
-      indicesType: 'UNIQUE'
+      fields: 'email',
+      unique: true
     })
   },
 

@@ -25,7 +25,7 @@ const CopyFile = async (src, dest) => {
     if (fs.existsSync(dest)) { fs.unlinkSync(dest) }
     const stream = fs.createReadStream(src).pipe(fs.createWriteStream(dest))
     stream.on('close', () => {
-      console.info(`coppied ${src} to ${dest}`)
+      console.debug(`coppied ${src} to ${dest}`)
       return resolve()
     })
   })
