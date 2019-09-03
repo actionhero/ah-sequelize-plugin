@@ -1,14 +1,14 @@
 exports.default = {
   sequelize: () => {
     return {
-      'autoMigrate': true,
-      'loadFixtures': false,
-      'database': 'DEVELOPMENT_DB',
-      'dialect': 'mysql',
-      'port': 3306,
-      'host': '127.0.0.1',
-      'username': 'root',
-      'password': ''
+      autoMigrate: true,
+      loadFixtures: false,
+      database: 'DEVELOPMENT_DB',
+      dialect: 'mysql',
+      port: 3306,
+      host: '127.0.0.1',
+      username: 'root',
+      password: ''
     }
   }
 }
@@ -17,9 +17,9 @@ exports.test = {
   ...exports.default.sequelize(),
   sequelize: () => {
     return {
-      'dialect': 'sqlite',
-      'storage': ':memory:',
-      'host': 'localhost'
+      dialect: 'sqlite',
+      storage: ':memory:',
+      host: 'localhost'
     }
   }
 }

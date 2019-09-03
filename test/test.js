@@ -23,7 +23,7 @@ const configChanges = {
 const CopyFile = async (src, dest) => {
   return new Promise((resolve) => {
     if (fs.existsSync(dest)) { fs.unlinkSync(dest) }
-    let stream = fs.createReadStream(src).pipe(fs.createWriteStream(dest))
+    const stream = fs.createReadStream(src).pipe(fs.createWriteStream(dest))
     stream.on('close', () => {
       console.info(`coppied ${src} to ${dest}`)
       return resolve()
@@ -69,7 +69,7 @@ describe('ah-sequelize-plugin', function () {
 
   it('should have loaded models', async () => {
     expect(api.models.User).to.exist()
-    let count = await api.models.User.count()
+    const count = await api.models.User.count()
     expect(count).to.equal(0)
   })
 
@@ -77,12 +77,12 @@ describe('ah-sequelize-plugin', function () {
     const person = new api.models.User()
     person.email = 'hello@example.com'
     person.name = 'test person'
-    let { error } = await person.save()
+    const { error } = await person.save()
     expect(error).to.not.exist()
   })
 
   it('can count newly saved models', async () => {
-    let count = await api.models.User.count()
+    const count = await api.models.User.count()
     expect(count).to.equal(1)
   })
 
@@ -143,40 +143,40 @@ describe('ah-sequelize-plugin', function () {
   it('can delete a model', async () => {
     const person = await api.models.User.findOne({ where: { email: 'hello@example.com' } })
     await person.destroy()
-    let count = await api.models.User.count()
+    const count = await api.models.User.count()
     expect(count).to.equal(0)
   })
 
   it('can *really* delete a model', async () => {
     const person = await api.models.User.findOne({ paranoid: false, where: { email: 'hello@example.com' } })
     await person.destroy({ force: true })
-    let count = await api.models.User.count()
+    const count = await api.models.User.count()
     expect(count).to.equal(0)
   })
 
   it('should have loaded plugin models', async () => {
     expect(api.models.Post).to.exist()
-    let count = await api.models.Post.count()
+    const count = await api.models.Post.count()
     expect(count).to.equal(0)
   })
 
   it('can create a plugin model instance (indicating the databse was migrated for plugin as well)', async () => {
     const post = new api.models.Post()
     post.title = 'You\'ll never guess what happened next!'
-    let { error } = await post.save()
+    const { error } = await post.save()
     expect(error).to.not.exist()
   })
 
   it('can count newly saved plugin models', async () => {
-    let count = await api.models.Post.count()
+    const count = await api.models.Post.count()
     expect(count).to.equal(1)
   })
 
   it('can delete a plugin model', async () => {
     const post = await api.models.Post.findOne({ where: { title: 'You\'ll never guess what happened next!' } })
-    let { error } = await post.destroy()
+    const { error } = await post.destroy()
     expect(error).to.not.exist()
-    let count = await api.models.Post.count()
+    const count = await api.models.Post.count()
     expect(count).to.equal(0)
   })
 })

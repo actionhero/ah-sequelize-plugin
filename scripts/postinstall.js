@@ -30,7 +30,7 @@ try {
   }
 
   ['models', 'test/fixtures'].forEach(function (f) {
-    let t = path.normalize(process.cwd() + '/../../' + f)
+    const t = path.normalize(process.cwd() + '/../../' + f)
     console.log('creating ' + t)
     mkdirp.sync(t)
   })

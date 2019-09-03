@@ -55,9 +55,9 @@ module.exports =
               return this.importModelsFromDirectory(filename)
             }
             if (path.extname(file) !== '.js') return
-            let nameParts = file.split('/')
-            let name = nameParts[(nameParts.length - 1)].split('.')[0]
-            let modelFunc = currySchemaFunc(require(filename))
+            const nameParts = file.split('/')
+            const name = nameParts[(nameParts.length - 1)].split('.')[0]
+            const modelFunc = currySchemaFunc(require(filename))
             this.sequelize.import(name, modelFunc)
 
             // watch model files for changes
@@ -80,7 +80,7 @@ module.exports =
     async loadFixtures () {
       if (config.loadFixtures) {
         const SequelizeFixtures = require('sequelize-fixtures')
-        let options = { log: config.logging }
+        const options = { log: config.logging }
         await SequelizeFixtures.loadFile(api.projectRoot + '/test/fixtures/*.{json,yml,js}', api.models, options)
       }
     }
@@ -133,9 +133,9 @@ module.exports =
 async function checkMetaOldSchema () {
   // Check if we need to upgrade from the old sequelize migration format
   try {
-    let raw = await api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', { raw: true })
-    let rows = raw[0]
-    if (rows.length && rows[0].hasOwnProperty('id')) {
+    const raw = await api.sequelize.sequelize.query('SELECT * FROM SequelizeMeta', { raw: true })
+    const rows = raw[0]
+    if (rows.length && Object.prototype.hasOwnProperty.call(rows[0], 'id')) {
       throw new Error('Old-style meta-migration table detected - please use `sequelize-cli`\'s `db:migrate:old_schema` to migrate.')
     }
   } catch (error) {
