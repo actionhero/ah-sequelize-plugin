@@ -7,7 +7,7 @@ refrences:
 
   images: &images
     docker:
-      - image: circleci/node:8
+      - image: circleci/node:12
       - image: redis:4
 
 jobs:
