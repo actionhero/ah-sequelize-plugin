@@ -1,3 +1,5 @@
+const Op = require('Sequelize').Op
+
 module.exports = function (sequelize, DataTypes, api) {
   const model = sequelize.define('User', {
     id: {
@@ -21,7 +23,7 @@ module.exports = function (sequelize, DataTypes, api) {
   model.countEvans = function () {
     return model.count({
       where: {
-        name: { [sequelize.Op.like]: '%evan%' }
+        name: { [Op.like]: '%evan%' }
       }
     })
   }

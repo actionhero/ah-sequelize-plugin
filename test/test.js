@@ -25,7 +25,7 @@ const CopyFile = async (src, dest) => {
     if (fs.existsSync(dest)) { fs.unlinkSync(dest) }
     const stream = fs.createReadStream(src).pipe(fs.createWriteStream(dest))
     stream.on('close', () => {
-      console.info(`coppied ${src} to ${dest}`)
+      console.debug(`coppied ${src} to ${dest}`)
       return resolve()
     })
   })
@@ -134,6 +134,7 @@ describe('ah-sequelize-plugin', function () {
 
     try {
       await otherPerson.save()
+      console.log(await api.models.User.findAll())
       throw new Error('should not succeed')
     } catch (error) {
       expect(error.toString()).to.match(/SequelizeUniqueConstraintError/)
