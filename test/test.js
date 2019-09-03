@@ -134,7 +134,6 @@ describe('ah-sequelize-plugin', function () {
 
     try {
       await otherPerson.save()
-      console.log(await api.models.User.findAll())
       throw new Error('should not succeed')
     } catch (error) {
       expect(error.toString()).to.match(/SequelizeUniqueConstraintError/)
