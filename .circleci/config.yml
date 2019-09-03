@@ -37,7 +37,7 @@ jobs:
       - run:
           name: linter
           command: ./node_modules/.bin/standard
-      - run
+      - run:
           name: install sqlite3
           command: npm install --save sqlite3
       - run:
