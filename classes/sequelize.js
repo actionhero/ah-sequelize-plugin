@@ -9,7 +9,6 @@ module.exports =
   class SequelizePlugin {
     constructor () {
       config.logging = config.logging !== false ? config.logging || api.log : () => { }
-      config.operatorsAliases = config.operatorsAliases === true
 
       this.sequelize = new Sequelize(
         config.database,
