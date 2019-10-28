@@ -45,27 +45,33 @@ A `./config/sequelize.js` file will be created which will store your database co
 To override the default location for models and/or migrations, use the `modelsDir` and `migrationsDir` configuration parameter with an array of paths relative to the project root.
 
 ```javascript
-const databaseBaseName = 'app'
+const { URL } = require('url')
+
+const databaseBaseName = 'my-app'
 
 exports.default = {
   sequelize: (api) => {
-    let dialect = 'mysql'
-    let host = process.env.MYSQL_HOST || '127.0.0.1'
-    let port = process.env.MYSQL_PORT || 3306
-    let database = process.env.MYSQL_DATABASE || `${databaseBaseName}_${api.env}${process.env.JEST_WORKER_ID ? '_' + process.env.JEST_WORKER_ID : null}`
-    let username = process.env.MYSQL_USER || 'root'
-    let password = process.env.MYSQL_PASS || undefined
+    let dialect = 'postgres'
+    let host = process.env.DB_HOST || '127.0.0.1'
+    let port = process.env.DB_PORT || 5432
+    let database = process.env.DB_DATABASE || `${databaseBaseName}_${api.env}${process.env.JEST_WORKER_ID ? '_' + process.env.JEST_WORKER_ID : ''}`
+    let username = process.env.DB_USER || undefined
+    let password = process.env.DB_PASS || undefined
 
     // if your environment provides database information via a single JDBC-style URL like mysql://username:password@hostname:port/default_schema
     const connectionURL = process.env.DATABASE_URL || process.env.MYSQL_URL || process.env.PG_URL || process.env.JAWSDB_URL
+
     if (connectionURL) {
-      dialect = connectionURL.match(/^(.*):\/\//)[1]
-      username = connectionURL.match(new RegExp(`${dialect}://(.*):.*@`))[1]
-      password = connectionURL.match(new RegExp(`${dialect}://.*:(.*)@`))[1]
-      host = connectionURL.match(new RegExp(`${dialect}://.*:.*@(.*):.*`))[1]
-      port = connectionURL.match(new RegExp(`${dialect}://.*:.*@.*:(.*)/`))[1]
-      database = connectionURL.match(new RegExp(`${dialect}://.*:.*@.*:.*/(.*)`))[1]
+      const parsed = new URL(connectionURL)
+      if (parsed.protocol) { dialect = parsed.protocol.slice(0, -1) }
+      if (parsed.username) { username = parsed.username }
+      if (parsed.password) { password = parsed.password }
+      if (parsed.hostname) { host = parsed.hostname }
+      if (parsed.port) { port = parsed.port }
+      if (parsed.pathname) { database = parsed.pathname.substring(1) }
     }
+
+    if (dialect === 'postgresql') { dialect = 'postgres' }
 
     return {
       autoMigrate: true,
@@ -82,7 +88,6 @@ exports.default = {
     }
   }
 }
-
 ```
 
 #### Logging
