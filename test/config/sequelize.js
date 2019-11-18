@@ -1,3 +1,5 @@
+const path = require('path')
+
 exports.test = {
   sequelize: () => {
     return {
@@ -6,8 +8,8 @@ exports.test = {
       dialect: 'sqlite',
       storage: ':memory:',
       host: 'localhost',
-      modelsDir: ['models', 'plugins/test-plugin/models'],
-      migrationsDir: ['migrations', 'plugins/test-plugin/migrations']
+      modelsDir: [path.join(__dirname, '..', 'models'), path.join(__dirname, '..', 'plugins/test-plugin/models')],
+      migrationsDir: [path.join(__dirname, '..', 'migrations'), path.join(__dirname, '..', 'plugins/test-plugin/migrations')]
     }
   }
 }
