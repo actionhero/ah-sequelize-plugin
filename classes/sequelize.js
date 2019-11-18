@@ -40,7 +40,7 @@ module.exports = class SequelizePlugin {
               }
             ],
             path: dir,
-            pattern: /\.js$/
+            pattern: /\.(js|ts)$/
           }
         })
       )
@@ -54,7 +54,7 @@ module.exports = class SequelizePlugin {
         if (fs.statSync(filename).isDirectory()) {
           return this.importModelsFromDirectory(filename)
         }
-        if (path.extname(file) !== '.js') return
+        if (path.extname(file) !== '.js' && path.extname(file) !== '.ts') return
         const nameParts = file.split('/')
         const name = nameParts[nameParts.length - 1].split('.')[0]
         const modelFunc = currySchemaFunc(require(filename))
@@ -166,6 +166,10 @@ async function checkMetaOldSchema () {
 }
 
 const currySchemaFunc = function (SchemaExportFunc) {
+  if (typeof SchemaExportFunc !== 'function') {
+    SchemaExportFunc = SchemaExportFunc[Object.keys(SchemaExportFunc)[0]]
+  }
+
   return function (a, b) {
     return SchemaExportFunc(a, b, api)
   }
