@@ -40,7 +40,7 @@ module.exports = class SequelizePlugin {
               }
             ],
             path: dir,
-            pattern: /\.(js|ts)$/
+            pattern: /(\.js|.{2,*}\.ts)$/
           }
         })
       )
@@ -54,7 +54,7 @@ module.exports = class SequelizePlugin {
         if (fs.statSync(filename).isDirectory()) {
           return this.importModelsFromDirectory(filename)
         }
-        if (path.extname(file) !== '.js' && path.extname(file) !== '.ts') return
+        if ((path.extname(file) !== '.js' && path.extname(file) !== '.ts') || file.indexOf('.d.ts') > 0) return
         const nameParts = file.split('/')
         const name = nameParts[nameParts.length - 1].split('.')[0]
         const modelFunc = currySchemaFunc(require(filename))
