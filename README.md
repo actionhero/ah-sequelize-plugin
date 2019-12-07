@@ -135,7 +135,7 @@ module.exports.production = DEFAULT.sequelize({
 
 The `logging` configuration parameter accepts either a `false` value, or a function which accepts a log value of type `string` and a event level value of type `string` (ex: `console.log`, `log` from Actionhero). If you are passing in a function for the logging parameter.
 
-## [Models](http://docs.sequelizejs.com/en/latest/api/models)
+## Models
 
 Thanks to `sequelize-typescript`, we can have models with tagged parameters. The example below shows of how to use hooks, associations, and more. Further information can be found at https://github.com/RobinBuschmann/sequelize-typescript.
 
