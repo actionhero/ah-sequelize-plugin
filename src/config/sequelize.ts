@@ -49,7 +49,6 @@ export const DEFAULT = {
 
     return {
       autoMigrate: true,
-      loadFixtures: false,
       logging: false,
       dialect: dialect,
       port: parseInt(port),
