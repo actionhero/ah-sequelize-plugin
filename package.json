@@ -38,7 +38,7 @@
   },
   "peerDependencies": {
     "sequelize": ">=5.18.1",
-    "actionhero": ">=19.2.2"
+    "actionhero": ">=21.0.0"
   },
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha",

@@ -1,9 +1,9 @@
 const path = require('path')
 const fs = require('fs')
 const Umzug = require('umzug')
-const { api } = require('actionhero')
+const { api, config: ahConfig } = require('actionhero')
 const Sequelize = require('sequelize')
-const config = api.config.sequelize
+const config = ahConfig.sequelize
 
 module.exports = class SequelizePlugin {
   constructor () {
