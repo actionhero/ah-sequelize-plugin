@@ -38,7 +38,7 @@ jobs:
           command: createdb "ah_sequelize_test_1" --host localhost --user postgres
       - run:
           name: linter
-          command: npm run link
+          command: npm run lint
       - run:
           name: test
           command: ./node_modules/.bin/jest --ci

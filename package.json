@@ -54,7 +54,7 @@
     "pretest": "npm run lint && npm run build",
     "postinstall": "npm run build",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --declaration",
-    "lint": "prettier --check src/*/**.ts __test__/*/**.ts examples/*/**.ts config"
+    "lint": "prettier --check src/*/**.ts __test__/*/**.ts"
   },
   "jest": {
     "testPathIgnorePatterns": [
