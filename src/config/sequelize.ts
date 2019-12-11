@@ -1,7 +1,7 @@
 import { URL } from "url";
-import * as path from "path";
+import { join } from "path";
 
-const databaseBaseName = "ah_sequelize";
+const databaseName = "ah_sequelize";
 
 export const DEFAULT = {
   sequelize: config => {
@@ -10,7 +10,7 @@ export const DEFAULT = {
     let port = process.env.DB_PORT || "5432";
     let database =
       process.env.DB_DATABASE ||
-      `${databaseBaseName}_${config.process.env}${
+      `${databaseName}_${config.process.env}${
         process.env.JEST_WORKER_ID ? "_" + process.env.JEST_WORKER_ID : ""
       }`;
     let username =
@@ -56,13 +56,13 @@ export const DEFAULT = {
       host: host,
       username: username,
       password: password,
-      models: [path.join(__dirname, "..", "models")],
-      migrations: [path.join(__dirname, "..", "migrations")]
+      models: [join(__dirname, "..", "models")],
+      migrations: [join(__dirname, "..", "migrations")]
     };
   }
 };
 
-// for the seqeilize CLI tool
+// for the sequelize CLI tool
 module.exports.development = DEFAULT.sequelize({
   env: "development",
   process: { env: "development" }
