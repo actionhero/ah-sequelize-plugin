@@ -19,14 +19,16 @@ For versions compatible with ActionHero versions prior to `18.0.0`, use version 
 1. Install this plugin: `npm install ah-sequelize-plugin --save`
 2. Add sequelize packages: `npm install sequelize sequelize-typescript --save`
 3. Add types and reflexive addons: `npm install @types/bluebird @types/validator reflect-metadata --save`
-4. Add plugin to your project's `./config/plugins.js`:
+4. Add plugin to your project's `./src/config/plugins.js`:
 
 ```ts
+import * as path from "path";
+
 export const DEFAULT = {
   plugins: () => {
     return {
       "ah-sequelize-plugin": {
-        path: __dirname + "/../node_modules/ah-sequelize-plugin"
+        path: path.join(process.cwd(), "node_modules", "ah-sequelize-plugin")
       }
     };
   }
