@@ -165,6 +165,16 @@ module.exports = sequelizeConfigEnv.sequelize()
 
 This initializes the config for the CLI to use.
 
+Once you're done, the folder structure should look like so:
+
+```
+src/
+  models/
+  migrations/
+.sequelizerc
+sequelize.js
+```
+
 You can now use the CLI to create & run migrations:
 
 ```
