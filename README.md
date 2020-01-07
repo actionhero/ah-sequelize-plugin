@@ -66,13 +66,13 @@ For additional information on supported databases visit the [Sequelize Docs](htt
 
 ### Configuration
 
-A `./src/config/sequelize.ts` will need to be created for your project. The example below will parse the Environment variable `DATABASE_URL` for a `postgres` database, however you can configure your connection in many ways. You can connect to DB pools, configure read/write splitting and more with Sequelize options.
+A `./src/config/sequelize.js` will need to be created for your project. The example below will parse the Environment variable `DATABASE_URL` for a `postgres` database, however you can configure your connection in many ways. You can connect to DB pools, configure read/write splitting and more with Sequelize options.
 
-```ts
-import { URL } from "url";
-import * as path from "path";
+```javascript
+const { URL } = require('url')
+const path = require('path')
 
-export const DEFAULT = {
+const DEFAULT = {
   sequelize: config => {
     let dialect = "postgres";
     let host = "127.0.0.1";
@@ -116,6 +116,8 @@ export const DEFAULT = {
   }
 };
 
+module.exports.DEFAULT = DEFAULT;
+
 // for the sequelize CLI tool
 module.exports.development = DEFAULT.sequelize({
   env: "development",
@@ -131,6 +133,42 @@ module.exports.production = DEFAULT.sequelize({
   env: "production",
   process: { env: "production" }
 });
+```
+
+#### Configuring sequelize-cli
+
+If you installed the CLI in the last step, you'll want to do the following to finish setting it up:
+
+Create a file `.sequelizerc` in the root of your project. It should contain:
+
+```javascript
+const path = require('path');
+
+module.exports = {
+  'config': path.resolve('.', 'sequelize.js'),
+  'models-path': path.resolve('src', 'models'),
+  'seeders-path': path.resolve('src', 'seeders'),
+  'migrations-path': path.resolve('src', 'migrations')
+}
+```
+
+This tells the sequelize-cli where to find your migration files, models, etc. The values here assume you are using the default configuration.
+
+In the root folder create a file called `sequelize.js`, and add the following contents
+
+```javascript
+const sequelizeConfig = require('./src/config/sequelize.js')
+
+const sequelizeConfigEnv = sequelizeConfig[process.env] || sequelizeConfig.DEFAULT
+module.exports = sequelizeConfigEnv.sequelize()
+```
+
+This initializes the config for the CLI to use.
+
+You can now use the CLI to create & run migrations:
+
+```
+npx sequelize-cli migration:generate --name migration-skeleton
 ```
 
 #### Logging
