@@ -159,7 +159,7 @@ In the root folder create a file called `sequelize.js`, and add the following co
 ```javascript
 const sequelizeConfig = require('./src/config/sequelize.js')
 
-const sequelizeConfigEnv = sequelizeConfig[process.env] || sequelizeConfig.DEFAULT
+const sequelizeConfigEnv = sequelizeConfig[process.env.NODE_ENV] || sequelizeConfig.DEFAULT
 module.exports = sequelizeConfigEnv.sequelize()
 ```
 
