@@ -17,21 +17,26 @@ export class SequelizeInitializer extends Initializer {
   async start() {
     api.sequelize = new Sequelize(config.sequelize);
     await this.test();
-    await this.migrate();
+    await this.migrate(config.sequelize.autoMigrate);
   }
 
   async stop() {
     await api.sequelize.close();
   }
 
-  async migrate() {
-    this.importMigrationsFromDirectory(config.sequelize.migrations);
-    for (const umzug of this.umzug) {
-      await umzug.up();
+  async migrate(toMigrate: boolean) {
+    if (toMigrate) {
+      log("running sequelize migrations", "debug");
+      this.importMigrationsFromDirectory(config.sequelize.migrations);
+      for (const umzug of this.umzug) {
+        await umzug.up();
+      }
+    } else {
+      log("skipping sequelize migrations", "debug");
     }
   }
 
-  importMigrationsFromDirectory(dir) {
+  importMigrationsFromDirectory(dir: string) {
     (Array.isArray(dir) ? dir : [dir]).forEach(dir => {
       const umzug = new Umzug({
         storage: "sequelize",

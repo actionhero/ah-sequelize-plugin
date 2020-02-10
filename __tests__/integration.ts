@@ -1,4 +1,4 @@
-import { Process, env, specHelper } from "actionhero";
+import { Process, env } from "actionhero";
 import { User } from "../src/models/User";
 import { Post } from "../src/models/Post";
 
