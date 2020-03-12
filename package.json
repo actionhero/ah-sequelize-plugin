@@ -23,7 +23,7 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "mkdirp": "^0.5.1",
+    "mkdirp": "^1.0.0",
     "umzug": "^2.2.0"
   },
   "devDependencies": {
