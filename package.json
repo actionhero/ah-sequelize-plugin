@@ -23,30 +23,29 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "mkdirp": "^0.5.1",
     "umzug": "^2.2.0"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.29",
-    "@types/jest": "^24.0.23",
-    "@types/node": "^12.12.14",
+    "@types/bluebird": "^3.5.30",
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.0",
     "@types/validator": "^12.0.1",
     "actionhero": "^21.0.0",
-    "bcrypt": "^3.0.7",
-    "jest": "^24.9.0",
-    "pg": "^7.14.0",
+    "bcrypt": "^4.0.1",
+    "jest": "^25.1.0",
+    "pg": "^7.18.2",
     "prettier": "^1.19.1",
     "reflect-metadata": "^0.1.13",
-    "sequelize": "^5.18.1",
+    "sequelize": "^5.21.5",
     "sequelize-typescript": "^1.0.0",
-    "ts-jest": "^24.2.0",
+    "ts-jest": "^25.2.1",
     "ts-node-dev": "^1.0.0-pre.44",
-    "typescript": "^3.7.2"
+    "typescript": "^3.8.3"
   },
   "peerDependencies": {
-    "sequelize": ">=5.18.1",
-    "sequelize-typescript": ">=1.0.0",
-    "actionhero": ">=21.0.0"
+    "sequelize": ">=5.21.5",
+    "sequelize-typescript": ">=1.1.0",
+    "actionhero": ">=22.0.5"
   },
   "scripts": {
     "dev": "ts-node-dev --transpile-only ./node_modules/.bin/actionhero start",
