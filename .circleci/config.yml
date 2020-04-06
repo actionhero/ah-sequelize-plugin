@@ -13,6 +13,7 @@ references:
 
 jobs:
   build:
+    <<: *images
     steps:
       - checkout
       - restore_cache:
