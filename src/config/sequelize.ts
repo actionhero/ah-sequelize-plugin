@@ -4,7 +4,7 @@ import { join } from "path";
 const databaseName = "ah_sequelize";
 
 export const DEFAULT = {
-  sequelize: config => {
+  sequelize: (config) => {
     let dialect = "postgres";
     let host = process.env.DB_HOST || "127.0.0.1";
     let port = process.env.DB_PORT || "5432";
@@ -57,23 +57,23 @@ export const DEFAULT = {
       username: username,
       password: password,
       models: [join(__dirname, "..", "models")],
-      migrations: [join(__dirname, "..", "migrations")]
+      migrations: [join(__dirname, "..", "migrations")],
     };
-  }
+  },
 };
 
 // for the sequelize CLI tool
 module.exports.development = DEFAULT.sequelize({
   env: "development",
-  process: { env: "development" }
+  process: { env: "development" },
 });
 
 module.exports.staging = DEFAULT.sequelize({
   env: "staging",
-  process: { env: "staging" }
+  process: { env: "staging" },
 });
 
 module.exports.production = DEFAULT.sequelize({
   env: "production",
-  process: { env: "production" }
+  process: { env: "production" },
 });

@@ -1,55 +1,55 @@
 module.exports = {
-  up: async function(migration, DataTypes) {
+  up: async function (migration, DataTypes) {
     await migration.createTable(
       "users",
       {
         guid: {
           type: DataTypes.UUID,
           defaultValue: DataTypes.UUIDV4,
-          primaryKey: true
+          primaryKey: true,
         },
 
         firstName: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         lastName: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         email: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         passwordHash: {
           type: DataTypes.TEXT,
-          allowNull: true
+          allowNull: true,
         },
 
         lastLoginAt: {
           type: DataTypes.DATE,
-          allowNull: true
+          allowNull: true,
         },
 
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
-        deletedAt: DataTypes.DATE
+        deletedAt: DataTypes.DATE,
       },
       {
-        charset: "utf8mb4"
+        charset: "utf8mb4",
       }
     );
 
     await migration.addIndex("users", ["email"], {
       unique: true,
-      fields: "email"
+      fields: "email",
     });
   },
 
-  down: async function(migration) {
+  down: async function (migration) {
     await migration.dropTable("users");
-  }
+  },
 };

@@ -37,11 +37,11 @@ export class SequelizeInitializer extends Initializer {
   }
 
   importMigrationsFromDirectory(dir: string) {
-    (Array.isArray(dir) ? dir : [dir]).forEach(dir => {
+    (Array.isArray(dir) ? dir : [dir]).forEach((dir) => {
       const umzug = new Umzug({
         storage: "sequelize",
         storageOptions: {
-          sequelize: api.sequelize
+          sequelize: api.sequelize,
         },
         migrations: {
           params: [
@@ -51,22 +51,22 @@ export class SequelizeInitializer extends Initializer {
               throw new Error(
                 'Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.'
               );
-            }
+            },
           ],
           path: dir,
-          pattern: /(\.js|\w{3,}\.ts)$/
+          pattern: /(\.js|\w{3,}\.ts)$/,
         },
-        logging: function() {
+        logging: function () {
           if (arguments[0].match(/\.d\.ts does not match pattern/)) {
             return;
           }
 
           log.apply(null, arguments);
-        }
+        },
       });
 
       function logUmzugEvent(eventName) {
-        return function(name, migration) {
+        return function (name, migration) {
           log(`${name} ${eventName}`);
         };
       }

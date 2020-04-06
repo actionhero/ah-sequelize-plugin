@@ -5,7 +5,7 @@ import {
   ForeignKey,
   AllowNull,
   BeforeCreate,
-  BelongsTo
+  BelongsTo,
 } from "sequelize-typescript";
 import * as uuid from "uuid/v4";
 import { User } from "./User";

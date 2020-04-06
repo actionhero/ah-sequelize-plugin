@@ -6,7 +6,7 @@ import {
   AllowNull,
   IsEmail,
   BeforeCreate,
-  HasMany
+  HasMany,
 } from "sequelize-typescript";
 import * as uuid from "uuid/v4";
 import { Post } from "./Post";
