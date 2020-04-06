@@ -9,12 +9,12 @@ async function truncate() {
 
   await Promise.all(
     models.map(
-      async model => await model.destroy({ truncate: true, force: true })
+      async (model) => await model.destroy({ truncate: true, force: true })
     )
   );
 }
 
-describe("ah-sequelize-plugin", function() {
+describe("ah-sequelize-plugin", function () {
   beforeAll(async () => {
     await actionhero.start();
     await truncate();
@@ -55,7 +55,7 @@ describe("ah-sequelize-plugin", function() {
 
   it("can read saved models", async () => {
     const person = await User.findOne({
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     expect(person.firstName).toBe("test");
@@ -63,7 +63,7 @@ describe("ah-sequelize-plugin", function() {
 
   it("can update saved models", async () => {
     const person = await User.findOne({
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     person.firstName = "a new first";
@@ -74,7 +74,7 @@ describe("ah-sequelize-plugin", function() {
 
   it("auto-adds timestamp columns to models", async () => {
     const person = await User.findOne({
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     const now = new Date().getTime();
@@ -85,7 +85,7 @@ describe("ah-sequelize-plugin", function() {
 
   it("can use instance methods on models", async () => {
     const person = await User.findOne({
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     await person.updatePassword("passw0rd");
@@ -115,7 +115,7 @@ describe("ah-sequelize-plugin", function() {
     const post = new Post({
       authorGuid: person.guid,
       title: "my first post",
-      body: "hello world"
+      body: "hello world",
     });
     await post.save();
 
@@ -125,7 +125,7 @@ describe("ah-sequelize-plugin", function() {
 
   it("can delete a model", async () => {
     const person = await User.findOne({
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     await person.destroy();
@@ -136,7 +136,7 @@ describe("ah-sequelize-plugin", function() {
   it("can *really* delete a model", async () => {
     const person = await User.findOne({
       paranoid: false,
-      where: { email: "hello@example.com" }
+      where: { email: "hello@example.com" },
     });
 
     await person.destroy({ force: true });

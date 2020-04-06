@@ -23,37 +23,37 @@
     "node": ">=8.0.0"
   },
   "dependencies": {
-    "umzug": "^2.2.0"
+    "umzug": "^2.3.0"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.30",
-    "@types/jest": "^25.1.4",
-    "@types/node": "^13.9.0",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.11.0",
     "@types/validator": "^12.0.1",
-    "actionhero": "^21.0.0",
+    "actionhero": "^22.0.7",
     "bcrypt": "^4.0.1",
-    "jest": "^25.1.0",
-    "pg": "^7.18.2",
-    "prettier": "^1.19.1",
+    "jest": "^25.2.7",
+    "pg": "^8.0.0",
+    "prettier": "^2.0.4",
     "reflect-metadata": "^0.1.13",
     "sequelize": "^5.21.5",
     "sequelize-typescript": "^1.0.0",
-    "ts-jest": "^25.2.1",
+    "ts-jest": "^25.3.1",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
   },
   "peerDependencies": {
-    "sequelize": ">=5.21.5",
+    "sequelize": ">=5.21.6",
     "sequelize-typescript": ">=1.1.0",
-    "actionhero": ">=22.0.5"
+    "actionhero": ">=22.0.7"
   },
   "scripts": {
-    "dev": "ts-node-dev --transpile-only ./node_modules/.bin/actionhero start",
+    "dev": "ts-node-dev --transpile-only src/server.ts",
     "test": "jest",
     "pretest": "npm run lint && npm run build",
     "prepare": "npm run build",
     "build": "rm -rf dist && ./node_modules/.bin/tsc --declaration",
-    "lint": "prettier --check src/*/**.ts __test__/*/**.ts"
+    "lint": "prettier --check src __tests__"
   },
   "jest": {
     "testPathIgnorePatterns": [

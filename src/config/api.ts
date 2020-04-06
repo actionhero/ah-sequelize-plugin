@@ -1,7 +1,7 @@
 const path = require("path");
 
 export const DEFAULT = {
-  general: config => {
+  general: (config) => {
     return {
       paths: {
         action: [path.join(__dirname, "..", "actions")],
@@ -17,8 +17,8 @@ export const DEFAULT = {
         test: [path.join(process.cwd(), "__tests__")],
         // for the src and dist paths, assume we are running in compiled mode from `dist`
         src: path.join(process.cwd(), "src"),
-        dist: path.join(process.cwd(), "dist")
-      }
+        dist: path.join(process.cwd(), "dist"),
+      },
     };
-  }
+  },
 };
