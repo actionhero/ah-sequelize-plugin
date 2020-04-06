@@ -30,7 +30,7 @@
     "@types/jest": "^25.2.1",
     "@types/node": "^13.11.0",
     "@types/validator": "^12.0.1",
-    "actionhero": "^21.0.0",
+    "actionhero": "^22.0.7",
     "bcrypt": "^4.0.1",
     "jest": "^25.2.7",
     "pg": "^8.0.0",
@@ -48,7 +48,7 @@
     "actionhero": ">=22.0.7"
   },
   "scripts": {
-    "dev": "ts-node-dev --transpile-only ./node_modules/.bin/actionhero start",
+    "dev": "ts-node-dev --transpile-only src/server.ts",
     "test": "jest",
     "pretest": "npm run lint && npm run build",
     "prepare": "npm run build",
