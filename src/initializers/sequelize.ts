@@ -8,13 +8,12 @@ export class SequelizeInitializer extends Initializer {
   constructor() {
     super();
     this.name = "sequelize";
-    this.loadPriority = 101;
-    this.startPriority = 101;
+    this.loadPriority = 201;
     this.stopPriority = 300;
     this.umzug = [];
   }
 
-  async start() {
+  async initialize() {
     api.sequelize = new Sequelize(config.sequelize);
     await this.test();
     await this.migrate(config.sequelize.autoMigrate);
