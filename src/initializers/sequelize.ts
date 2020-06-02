@@ -2,6 +2,12 @@ import { Sequelize } from "sequelize-typescript";
 import * as Umzug from "umzug";
 import { api, log, config, Initializer } from "actionhero";
 
+declare module "actionhero" {
+  interface Api {
+    sequelize: Sequelize;
+  }
+}
+
 export class SequelizeInitializer extends Initializer {
   umzug: Array<any>;
 
