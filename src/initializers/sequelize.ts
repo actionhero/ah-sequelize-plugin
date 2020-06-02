@@ -3,7 +3,7 @@ import * as Umzug from "umzug";
 import { api, log, config, Initializer } from "actionhero";
 
 declare module "actionhero" {
-  interface Api {
+  export interface Api {
     sequelize: Sequelize;
   }
 }
