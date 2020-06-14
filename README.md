@@ -28,10 +28,10 @@ export const DEFAULT = {
   plugins: () => {
     return {
       "ah-sequelize-plugin": {
-        path: path.join(process.cwd(), "node_modules", "ah-sequelize-plugin")
-      }
+        path: path.join(process.cwd(), "node_modules", "ah-sequelize-plugin"),
+      },
     };
-  }
+  },
 };
 ```
 
@@ -66,14 +66,14 @@ For additional information on supported databases visit the [Sequelize Docs](htt
 
 ### Configuration
 
-A `./src/config/sequelize.ts` will need to be created for your project. The example below will parse the Environment variable `DATABASE_URL` for a `postgres` database, however you can configure your connection in many ways. You can connect to DB pools, configure read/write splitting and more with Sequelize options.  This configuration also enabled `automigrate`, which means Actionhero will run your migrations for you at startup.
+A `./src/config/sequelize.ts` will need to be created for your project. The example below will parse the Environment variable `DATABASE_URL` for a `postgres` database, however you can configure your connection in many ways. You can connect to DB pools, configure read/write splitting and more with Sequelize options. This configuration also enabled `automigrate`, which means Actionhero will run your migrations for you at startup.
 
 ```javascript
 import { URL } from "url";
 import * as path from "path";
 
 const DEFAULT = {
-  sequelize: config => {
+  sequelize: (config) => {
     let dialect = "postgres";
     let host = "127.0.0.1";
     let port = "5432";
@@ -111,9 +111,9 @@ const DEFAULT = {
       username: username,
       password: password,
       models: [path.join(__dirname, "..", "models")],
-      migrations: [path.join(__dirname, "..", "migrations")]
+      migrations: [path.join(__dirname, "..", "migrations")],
     };
-  }
+  },
 };
 
 module.exports.DEFAULT = DEFAULT;
@@ -121,17 +121,17 @@ module.exports.DEFAULT = DEFAULT;
 // for the sequelize CLI tool
 module.exports.development = DEFAULT.sequelize({
   env: "development",
-  process: { env: "development" }
+  process: { env: "development" },
 });
 
 module.exports.staging = DEFAULT.sequelize({
   env: "staging",
-  process: { env: "staging" }
+  process: { env: "staging" },
 });
 
 module.exports.production = DEFAULT.sequelize({
   env: "production",
-  process: { env: "production" }
+  process: { env: "production" },
 });
 ```
 
@@ -142,14 +142,14 @@ If you installed the CLI in the last step, you'll want to do the following to fi
 Create a file `.sequelizerc` in the root of your project. It should contain:
 
 ```javascript
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  'config': path.resolve('.', 'sequelize.js'),
-  'models-path': path.resolve('src', 'models'),
-  'seeders-path': path.resolve('src', 'seeders'),
-  'migrations-path': path.resolve('src', 'migrations')
-}
+  config: path.resolve(".", "sequelize.js"),
+  "models-path": path.resolve("src", "models"),
+  "seeders-path": path.resolve("src", "seeders"),
+  "migrations-path": path.resolve("src", "migrations"),
+};
 ```
 
 This tells the sequelize-cli where to find your migration files, models, etc. The values here assume you are using the default configuration.
@@ -157,10 +157,11 @@ This tells the sequelize-cli where to find your migration files, models, etc. Th
 In the root folder create a file called `sequelize.js`, and add the following contents
 
 ```javascript
-const sequelizeConfig = require('./src/config/sequelize.js')
+const sequelizeConfig = require("./dist/config/sequelize.js");
 
-const sequelizeConfigEnv = sequelizeConfig[process.env.NODE_ENV] || sequelizeConfig.DEFAULT
-module.exports = sequelizeConfigEnv.sequelize()
+const sequelizeConfigEnv =
+  sequelizeConfig[process.env.NODE_ENV] || sequelizeConfig.DEFAULT;
+module.exports = sequelizeConfigEnv.sequelize();
 ```
 
 This initializes the config for the CLI to use.
@@ -199,7 +200,7 @@ import {
   AllowNull,
   IsEmail,
   BeforeCreate,
-  HasMany
+  HasMany,
 } from "sequelize-typescript";
 import * as uuid from "uuid/v4";
 import { Post } from "./Post";
@@ -271,7 +272,7 @@ export class UserCreate extends Action {
       firstName: { required: true },
       lastName: { required: true },
       password: { required: true },
-      email: { required: true }
+      email: { required: true },
     };
   }
 
@@ -279,7 +280,7 @@ export class UserCreate extends Action {
     const user = new User({
       firstName: params.firstName,
       lastName: params.lastName,
-      email: params.email
+      email: params.email,
     });
     await user.save();
     await user.updatePassword(params.password);
@@ -292,67 +293,65 @@ export class UserCreate extends Action {
 
 This plugin does not condone the use of `Sequelize.sync()` in favor of migrations. Keep you migrations in `./migrations` and use the [sequelize-cli](https://github.com/sequelize/cli) to execute them.
 
-**Note**: Migrations should remain as _.js files rather than _.ts files. Typescript files will run just fine, but the default Uzmug storage engine places file names into the database table. This means if you try to run your project in both TS and JS "modes", you will get conflicting migrations.
-
 An example migration to create a `users` table would look like:
 
-```js
-// from ./migrations/0000001-createUsersTable.js
+```ts
+// from ./migrations/0000001-createUsersTable.ts
 
 module.exports = {
-  up: async function(migration, DataTypes) {
+  up: async function (migration, DataTypes) {
     await migration.createTable(
       "users",
       {
         guid: {
           type: DataTypes.UUID,
           defaultValue: DataTypes.UUIDV4,
-          primaryKey: true
+          primaryKey: true,
         },
 
         firstName: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         lastName: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         email: {
           type: DataTypes.STRING(191),
-          allowNull: false
+          allowNull: false,
         },
 
         passwordHash: {
           type: DataTypes.TEXT,
-          allowNull: true
+          allowNull: true,
         },
 
         lastLoginAt: {
           type: DataTypes.DATE,
-          allowNull: true
+          allowNull: true,
         },
 
         createdAt: DataTypes.DATE,
         updatedAt: DataTypes.DATE,
-        deletedAt: DataTypes.DATE
+        deletedAt: DataTypes.DATE,
       },
       {
-        charset: "utf8mb4"
+        charset: "utf8mb4",
       }
     );
 
     await migration.addIndex("users", ["email"], {
       unique: true,
-      fields: "email"
+      fields: "email",
     });
   },
 
-  down: async function(migration) {
+  down: async function (migration) {
     await migration.dropTable("users");
-  }
+  },
 };
 ```
 

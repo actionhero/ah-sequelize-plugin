@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize-typescript";
-import * as Umzug from "umzug";
+import { Umzug, SequelizeStorage } from "umzug";
 import { api, log, config, Initializer } from "actionhero";
+import * as path from "path";
 
 declare module "actionhero" {
   export interface Api {
@@ -44,22 +45,18 @@ export class SequelizeInitializer extends Initializer {
   importMigrationsFromDirectory(dir: string) {
     (Array.isArray(dir) ? dir : [dir]).forEach((dir) => {
       const umzug = new Umzug({
-        storage: "sequelize",
-        storageOptions: {
-          sequelize: api.sequelize,
-        },
+        storage: new SequelizeStorage({ sequelize: api.sequelize }),
         migrations: {
           params: [
             api.sequelize.getQueryInterface(),
             api.sequelize.constructor,
-            () => {
-              throw new Error(
-                'Migration tried to use old style "done" callback. Please upgrade to "umzug" and return a promise instead.'
-              );
-            },
           ],
           path: dir,
           pattern: /(\.js|\w{3,}\.ts)$/,
+          nameFormatter: (filename: string) => {
+            // we want to use only the base-name of the file, so the migrations are named the same in JS and TS
+            return path.parse(filename).name;
+          },
         },
         logging: function () {
           if (arguments[0].match(/\.d\.ts does not match pattern/)) {
