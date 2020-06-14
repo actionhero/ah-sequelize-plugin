@@ -69,8 +69,8 @@ For additional information on supported databases visit the [Sequelize Docs](htt
 A `./src/config/sequelize.ts` will need to be created for your project. The example below will parse the Environment variable `DATABASE_URL` for a `postgres` database, however you can configure your connection in many ways. You can connect to DB pools, configure read/write splitting and more with Sequelize options.  This configuration also enabled `automigrate`, which means Actionhero will run your migrations for you at startup.
 
 ```javascript
-const { URL } = require('url')
-const path = require('path')
+import { URL } from "url";
+import * as path from "path";
 
 const DEFAULT = {
   sequelize: config => {
