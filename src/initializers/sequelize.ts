@@ -16,7 +16,7 @@ export class SequelizeInitializer extends Initializer {
     super();
     this.name = "sequelize";
     this.loadPriority = 201;
-    this.stopPriority = 300;
+    this.stopPriority = 9000;
     this.umzug = [];
   }
 
