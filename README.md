@@ -72,7 +72,7 @@ A `./src/config/sequelize.ts` will need to be created for your project. The exam
 import { URL } from "url";
 import * as path from "path";
 
-const DEFAULT = {
+export const DEFAULT = {
   sequelize: (config) => {
     let dialect = "postgres";
     let host = "127.0.0.1";
