@@ -17,7 +17,8 @@ For versions compatible with ActionHero versions prior to `18.0.0`, use version 
 ## Setup
 
 1. Install this plugin: `npm install ah-sequelize-plugin --save`
-2. Add sequelize packages: `npm install sequelize sequelize-typescript --save`
+2. Add sequelize packages: `npm install sequelize@5 sequelize-typescript --save`
+   > !! Note that `sequelize-typescript` [currently requires sequelzie v5](https://github.com/actionhero/ah-sequelize-plugin/issues/172)
 3. Add types and reflexive addons: `npm install @types/bluebird @types/validator reflect-metadata --save`
 4. Add plugin to your project's `./src/config/plugins.ts`:
 
