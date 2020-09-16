@@ -85,7 +85,8 @@ export class SequelizeInitializer extends Initializer {
   async test() {
     let query = "SELECT NOW()";
     if (config.sequelize.dialect === "mssql") query = "SELECT GETDATE();";
-    if (config.sequelize.dialect === "sqlite") query = "SELECT strftime('%s', 'now');";
+    if (config.sequelize.dialect === "sqlite")
+      query = "SELECT strftime('%s', 'now');";
 
     await api.sequelize.query(query);
   }
