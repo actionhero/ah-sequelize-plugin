@@ -1,23 +1,14 @@
 import { Process, env } from "actionhero";
 import { User } from "../src/models/User";
 import { Post } from "../src/models/Post";
+import { truncate } from "./utils/truncate";
 
 const actionhero = new Process();
-
-async function truncate() {
-  const models = [User, Post];
-
-  await Promise.all(
-    models.map(
-      async (model) => await model.destroy({ truncate: true, force: true })
-    )
-  );
-}
 
 describe("ah-sequelize-plugin", function () {
   beforeAll(async () => {
     await actionhero.start();
-    await truncate();
+    await truncate([User, Post]);
   });
 
   afterAll(async () => {
