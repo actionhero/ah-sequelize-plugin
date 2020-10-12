@@ -47,15 +47,27 @@ export class SequelizeInitializer extends Initializer {
       const umzug = new Umzug({
         storage: new SequelizeStorage({ sequelize: api.sequelize }),
         migrations: {
-          params: [
-            api.sequelize.getQueryInterface(),
-            api.sequelize.constructor,
-          ],
-          path: dir,
-          pattern: /(\.js|\w{3,}\.ts)$/,
-          nameFormatter: (filename: string) => {
-            // we want to use only the base-name of the file, so the migrations are named the same in JS and TS
-            return path.parse(filename).name;
+          // params: [
+          //   api.sequelize.getQueryInterface(),
+          //   api.sequelize.constructor,
+          // ],
+          context: api.sequelize.getQueryInterface(),
+          // path: dir,
+          // pattern: /(\.js|\w{3,}\.ts)$/,
+          glob: `${dir}/*.js`,
+          // nameFormatter: (filename: string) => {
+          //   // we want to use only the base-name of the file, so the migrations are named the same in JS and TS
+          //   return path.parse(filename).name;
+          // },
+
+          //@ts-ignore
+          resolve: ({ path: filename }) => {
+            const { up, down } = require(filename);
+            return {
+              name: path.parse(filename).name,
+              up: ({ context }) => up(context),
+              down: ({ context }) => down(context),
+            };
           },
         },
         logging: function () {
