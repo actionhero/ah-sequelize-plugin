@@ -57,7 +57,8 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "<rootDir>/__tests__/testPlugin"
+      "<rootDir>/__tests__/testPlugin",
+      "<rootDir>/__tests__/utils"
     ],
     "transform": {
       "^.+\\.ts?$": "ts-jest"
