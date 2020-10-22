@@ -113,6 +113,7 @@ export const DEFAULT = {
       password: password,
       models: [path.join(__dirname, "..", "models")],
       migrations: [path.join(__dirname, "..", "migrations")],
+      // you can also pass "dialectOptions", for example if you need `{ssl: true}` for Postgres
     };
   },
 };
