@@ -23,29 +23,15 @@ export const DEFAULT = {
 
     if (connectionURL) {
       const parsed = new URL(connectionURL);
-      if (parsed.protocol) {
-        dialect = parsed.protocol.slice(0, -1);
-      }
-      if (parsed.username) {
-        username = parsed.username;
-      }
-      if (parsed.password) {
-        password = parsed.password;
-      }
-      if (parsed.hostname) {
-        host = parsed.hostname;
-      }
-      if (parsed.port) {
-        port = parsed.port;
-      }
-      if (parsed.pathname) {
-        database = parsed.pathname.substring(1);
-      }
+      if (parsed.protocol) dialect = parsed.protocol.slice(0, -1);
+      if (parsed.username) username = parsed.username;
+      if (parsed.password) password = parsed.password;
+      if (parsed.hostname) host = parsed.hostname;
+      if (parsed.port) port = parsed.port;
+      if (parsed.pathname) database = parsed.pathname.substring(1);
     }
 
-    if (dialect === "postgresql") {
-      dialect = "postgres";
-    }
+    if (dialect === "postgresql") dialect = "postgres";
 
     return {
       autoMigrate: true,
