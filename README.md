@@ -8,6 +8,7 @@ This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https:
 
 ## Notes
 
+- Versions `3.0.0+` of this package are only compatible with Actionhero versions `24.0.0+`, sequelize v6+ and sequelize-typescript v2+. Node.js v10+ is required.
 - Versions `2.0.0+` of this package are only compatible with Actionhero versions `21.0.0+`.
 - Versions `1.0.0+` of this package are only compatible with Actionhero versions `18.0.0+`.
 
@@ -17,9 +18,8 @@ For versions compatible with ActionHero versions prior to `18.0.0`, use version 
 ## Setup
 
 1. Install this plugin: `npm install ah-sequelize-plugin --save`
-2. Add sequelize packages: `npm install sequelize@5 sequelize-typescript --save`
-   > !! Note that `sequelize-typescript` [currently requires sequelzie v5](https://github.com/actionhero/ah-sequelize-plugin/issues/172)
-3. Add types and reflexive addons: `npm install @types/bluebird @types/validator reflect-metadata --save`
+2. Add sequelize packages: `npm install sequelize@6 sequelize-typescript@2 --save`
+3. Add types and reflexive addons: `npm install @types/validator reflect-metadata --save`
 4. Add plugin to your project's `./src/config/plugins.ts`:
 
 ```ts
@@ -71,36 +71,33 @@ A `./src/config/sequelize.ts` will need to be created for your project. The exam
 
 ```javascript
 import { URL } from "url";
-import * as path from "path";
+import { join } from "path";
 
 export const DEFAULT = {
   sequelize: (config) => {
     let dialect = "postgres";
-    let host = "127.0.0.1";
-    let port = "5432";
-    let database = "actionhero";
-    let username = undefined;
-    let password = undefined;
+    let host = process.env.DB_HOST || "127.0.0.1";
+    let port = process.env.DB_PORT || "5432";
+    let database = `app_${process.env.NODE_ENV || "development"}`;
+    let username =
+      process.env.DB_USER || process.env.CI ? "postgres" : undefined;
+    let password = process.env.DB_PASS || undefined;
 
     // if your environment provides database information via a single JDBC-style URL like mysql://username:password@hostname:port/default_schema
-    if (process.env.DATABASE_URL) {
-      const parsed = new URL(process.env.DATABASE_URL);
-      if (parsed.username) {
-        username = parsed.username;
-      }
-      if (parsed.password) {
-        password = parsed.password;
-      }
-      if (parsed.hostname) {
-        host = parsed.hostname;
-      }
-      if (parsed.port) {
-        port = parsed.port;
-      }
-      if (parsed.pathname) {
-        database = parsed.pathname.substring(1);
-      }
+    const connectionURL =
+      process.env.DATABASE_URL || process.env.MYSQL_URL || process.env.PG_URL;
+
+    if (connectionURL) {
+      const parsed = new URL(connectionURL);
+      if (parsed.protocol) dialect = parsed.protocol.slice(0, -1);
+      if (parsed.username) username = parsed.username;
+      if (parsed.password) password = parsed.password;
+      if (parsed.hostname) host = parsed.hostname;
+      if (parsed.port) port = parsed.port;
+      if (parsed.pathname) database = parsed.pathname.substring(1);
     }
+
+    if (dialect === "postgresql") dialect = "postgres";
 
     return {
       autoMigrate: true,
@@ -111,14 +108,12 @@ export const DEFAULT = {
       host: host,
       username: username,
       password: password,
-      models: [path.join(__dirname, "..", "models")],
-      migrations: [path.join(__dirname, "..", "migrations")],
+      models: [join(__dirname, "..", "models")],
+      migrations: [join(__dirname, "..", "migrations")],
       // you can also pass "dialectOptions", for example if you need `{ssl: true}` for Postgres
     };
   },
 };
-
-module.exports.DEFAULT = DEFAULT;
 
 // for the sequelize CLI tool
 module.exports.development = DEFAULT.sequelize({
