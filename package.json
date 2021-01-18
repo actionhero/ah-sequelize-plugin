@@ -42,7 +42,7 @@
     "typescript": "^4.1.3"
   },
   "peerDependencies": {
-    "sequelize": ">=6.0.0",
+    "sequelize": ">=6.4.0",
     "sequelize-typescript": ">=2.0.0",
     "actionhero": ">=22.0.0"
   },
