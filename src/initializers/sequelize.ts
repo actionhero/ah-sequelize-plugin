@@ -58,19 +58,22 @@ export class SequelizeInitializer extends Initializer {
             return path.parse(filename).name;
           },
         },
-        logging: function () {
-          if (arguments[0].match(/\.d\.ts does not match pattern/)) {
-            return;
-          }
-
-          log.apply(null, arguments);
-        },
+        // logging: function () {
+        //   if (arguments[0].match(/\.d\.ts does not match pattern/)) return;
+        //   log.apply(
+        //     null,
+        //     [].concat(
+        //       arguments[0],
+        //       config.sequelize.migrationLogLevel || "info"
+        //     )
+        //   );
+        // },
       });
 
       function logUmzugEvent(eventName) {
         return function (name, migration) {
           log(
-            `${name} ${eventName}`,
+            `[migration] ${name} ${eventName}`,
             config.sequelize.migrationLogLevel || "info"
           );
         };
