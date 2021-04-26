@@ -69,7 +69,10 @@ export class SequelizeInitializer extends Initializer {
 
       function logUmzugEvent(eventName) {
         return function (name, migration) {
-          log(`${name} ${eventName}`);
+          log(
+            `${name} ${eventName}`,
+            config.sequelize.migrationLogLevel || "info"
+          );
         };
       }
 
