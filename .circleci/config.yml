@@ -33,6 +33,9 @@ jobs:
       - restore_cache:
           <<: *cache-options
       - run:
+          name: update apt
+          command: sudo apt get update
+      - run:
           name: install postgresql client
           command: sudo apt install -y postgresql-client
       - run:
