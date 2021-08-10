@@ -33,7 +33,7 @@ export class SequelizeInitializer extends Initializer {
   async migrate(toMigrate: boolean) {
     if (toMigrate) {
       log("running sequelize migrations", "debug");
-      this.importMigrationsFromDirectory(config.sequelize.migrations);
+      this.importMigrationsFromDirectory(config.sequelize);
       for (const umzug of this.umzug) {
         await umzug.up();
       }
@@ -42,15 +42,26 @@ export class SequelizeInitializer extends Initializer {
     }
   }
 
-  importMigrationsFromDirectory(dir: string) {
-    (Array.isArray(dir) ? dir : [dir]).forEach((dir) => {
+  importMigrationsFromDirectory(sequelizeConfig: any) {
+    const queryInterface = api.sequelize.getQueryInterface();
+    if (sequelizeConfig.functionsToInjectSchemaIn && sequelizeConfig.schema) {
+      for (const functionToInject of sequelizeConfig.functionsToInjectSchemaIn) {
+        if (queryInterface[functionToInject]) {
+          queryInterface[functionToInject] = this.injectSchema(
+            queryInterface[functionToInject],
+            sequelizeConfig.schema
+          );
+        }
+      }
+    }
+    (Array.isArray(sequelizeConfig.migrations)
+      ? sequelizeConfig.migrations
+      : [sequelizeConfig.migrations]
+    ).forEach((dir) => {
       const umzug = new Umzug({
         storage: new SequelizeStorage({ sequelize: api.sequelize }),
         migrations: {
-          params: [
-            api.sequelize.getQueryInterface(),
-            api.sequelize.constructor,
-          ],
+          params: [queryInterface, api.sequelize.constructor],
           path: dir,
           pattern: /(\.js|\w{3,}\.ts)$/,
           nameFormatter: (filename: string) => {
@@ -95,5 +106,16 @@ export class SequelizeInitializer extends Initializer {
       query = "SELECT strftime('%s', 'now');";
 
     await api.sequelize.query(query);
+  }
+
+  injectSchema(original, schema) {
+    return function () {
+      if (typeof arguments[0] === "string") {
+        arguments[0] = { tableName: arguments[0], schema };
+      } else if (!arguments[0].schema) {
+        arguments[0].schema = schema;
+      }
+      return original.apply(this, arguments);
+    };
   }
 }

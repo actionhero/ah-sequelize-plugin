@@ -112,6 +112,11 @@ export const DEFAULT = {
       migrations: [join(__dirname, "..", "migrations")],
       migrationLogLevel: "info",
       // you can also pass "dialectOptions", for example if you need `{ssl: true}` for Postgres
+      // If you want to change the schema you need to include the following configs:
+      schema: schema,
+      searchPath: schema,
+      dialectOptions: { prependSearchPath: true }, // Merge this one if it already exists.
+      functionsToInjectSchemaIn: ["addColumn", "removeColumn", "renameColumn"], // This config is needed if you are using one of these functions on your migrations.
     };
   },
 };
