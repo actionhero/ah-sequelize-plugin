@@ -2,7 +2,6 @@ import { Sequelize } from "sequelize-typescript";
 import { Umzug, SequelizeStorage } from "umzug";
 import { api, log, config, Initializer } from "actionhero";
 import * as path from "path";
-import { QueryInterface } from "sequelize";
 
 declare module "actionhero" {
   export interface Api {
