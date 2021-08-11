@@ -2,6 +2,7 @@ import { Sequelize } from "sequelize-typescript";
 import { Umzug, SequelizeStorage } from "umzug";
 import { api, log, config, Initializer } from "actionhero";
 import * as path from "path";
+import { QueryInterface } from "sequelize";
 
 declare module "actionhero" {
   export interface Api {
@@ -43,17 +44,7 @@ export class SequelizeInitializer extends Initializer {
   }
 
   importMigrationsFromDirectory(sequelizeConfig: any) {
-    const queryInterface = api.sequelize.getQueryInterface();
-    if (sequelizeConfig.functionsToInjectSchemaIn && sequelizeConfig.schema) {
-      for (const functionToInject of sequelizeConfig.functionsToInjectSchemaIn) {
-        if (queryInterface[functionToInject]) {
-          queryInterface[functionToInject] = this.injectSchema(
-            queryInterface[functionToInject],
-            sequelizeConfig.schema
-          );
-        }
-      }
-    }
+    const queryInterface = this.getInjectedQueryInterface(sequelizeConfig);
     (Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
       : [sequelizeConfig.migrations]
@@ -106,6 +97,30 @@ export class SequelizeInitializer extends Initializer {
       query = "SELECT strftime('%s', 'now');";
 
     await api.sequelize.query(query);
+  }
+
+  getInjectedQueryInterface(sequelizeConfig: any) {
+    const queryInterface = api.sequelize.getQueryInterface();
+    if (
+      sequelizeConfig.schema &&
+      sequelizeConfig.schema !== "public" &&
+      sequelizeConfig.dialect &&
+      sequelizeConfig.dialect === "postgres"
+    ) {
+      queryInterface.addColumn = this.injectSchema(
+        queryInterface.addColumn,
+        sequelizeConfig.schema
+      );
+      queryInterface.removeColumn = this.injectSchema(
+        queryInterface.removeColumn,
+        sequelizeConfig.schema
+      );
+      queryInterface.renameColumn = this.injectSchema(
+        queryInterface.renameColumn,
+        sequelizeConfig.schema
+      );
+    }
+    return queryInterface;
   }
 
   injectSchema(original, schema) {
