@@ -112,10 +112,10 @@ export const DEFAULT = {
       migrations: [join(__dirname, "..", "migrations")],
       migrationLogLevel: "info",
       // you can also pass "dialectOptions", for example if you need `{ssl: true}` for Postgres
-      // If you want to change the schema you need to include the following configs:
-      schema: schema,
-      searchPath: schema,
-      dialectOptions: { prependSearchPath: true }, // Merge this one if it already exists.
+      // For Example, if you want to change the schema of a Postgres database away from "public", you would need to include the following configs:
+      // schema: schema,
+      // searchPath: schema,
+      // dialectOptions: { prependSearchPath: true },
     };
   },
 };
@@ -136,6 +136,11 @@ module.exports.production = DEFAULT.sequelize({
   process: { env: "production" },
 });
 ```
+
+#### A Note about Postgres Schema changes
+
+The configuration above includes the 3 changes you need in your configuration to choose a non default (e.g.: `public`) schema for a Postgres database: `schema`, `searchPath`, and `dialectOptions`.  This package also includes the required code to patch your migrations (more on this below) to use the proper schema with no additional changes without any additional changes needed to your migrations or models.
+
 
 #### Configuring sequelize-cli
 
