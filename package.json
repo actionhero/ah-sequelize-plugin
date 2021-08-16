@@ -26,7 +26,7 @@
     "umzug": "v3.0.0-beta.5"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.20",
+    "@types/jest": "^27.0.1",
     "@types/node": "^16.0.0",
     "@types/validator": "^13.1.3",
     "actionhero": "^26.0.1",
