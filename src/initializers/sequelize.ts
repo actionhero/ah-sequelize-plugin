@@ -1,4 +1,4 @@
-import { Sequelize } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 import { api, config, Initializer, log } from "actionhero";
 import { Migrations } from "../modules/migrations";
 

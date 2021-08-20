@@ -17,7 +17,7 @@ describe("ah-sequelize-plugin", function () {
     expect(env).toBe("test");
   });
 
-  it.only("should have mounted models to the api object", () => {
+  it("should have mounted models to the api object", () => {
     expect(Object.keys(api.sequelize.models).sort()).toEqual(
       ["SequelizeMeta", "User", "Post"].sort()
     );
