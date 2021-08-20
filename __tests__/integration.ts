@@ -1,22 +1,26 @@
-import { Process, env } from "actionhero";
+import { Process, env, api } from "actionhero";
 import { User } from "../src/models/User";
 import { Post } from "../src/models/Post";
 import { truncate } from "./utils/truncate";
 
-const actionhero = new Process();
-
 describe("ah-sequelize-plugin", function () {
+  const actionhero = new Process();
+
   beforeAll(async () => {
     await actionhero.start();
     await truncate([User, Post]);
   });
 
-  afterAll(async () => {
-    await actionhero.stop();
-  });
+  afterAll(async () => await actionhero.stop());
 
   it("should have booted an ActionHero server", () => {
     expect(env).toBe("test");
+  });
+
+  it.only("should have mounted models to the api object", () => {
+    expect(Object.keys(api.sequelize.models).sort()).toEqual(
+      ["SequelizeMeta", "User", "Post"].sort()
+    );
   });
 
   it("should have loaded models", async () => {
