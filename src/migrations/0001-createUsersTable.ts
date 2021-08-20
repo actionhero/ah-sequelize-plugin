@@ -1,6 +1,11 @@
-module.exports = {
-  up: async function (migration, DataTypes) {
-    await migration.createTable(
+import * as Sequelzie from "sequelize";
+
+export default {
+  up: async function (
+    queryInterface: Sequelzie.QueryInterface,
+    DataTypes: typeof Sequelzie
+  ) {
+    await queryInterface.createTable(
       "users",
       {
         guid: {
@@ -43,13 +48,13 @@ module.exports = {
       }
     );
 
-    await migration.addIndex("users", ["email"], {
+    await queryInterface.addIndex("users", ["email"], {
       unique: true,
-      fields: "email",
+      fields: ["email"],
     });
   },
 
-  down: async function (migration) {
-    await migration.dropTable("users");
+  down: async function (queryInterface: Sequelzie.QueryInterface) {
+    await queryInterface.dropTable("users");
   },
 };
