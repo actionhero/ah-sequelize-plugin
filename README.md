@@ -164,7 +164,7 @@ This tells the sequelize-cli where to find your migration files, models, etc. Th
 In the root folder create a file called `sequelize.js`, and add the following contents
 
 ```javascript
-const sequelizeConfig = require("./dist/config/sequelize.js");
+const sequelizeConfig = require("./dist/config/sequelize.js"); // be sure to compile your project first.  Alterativly you could use `ts-node` and incldue the `./src/config/sequelize.ts`
 
 const sequelizeConfigEnv =
   sequelizeConfig[process.env.NODE_ENV] || sequelizeConfig.DEFAULT;
