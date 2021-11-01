@@ -5,7 +5,7 @@ references:
     key: package-cache-{{ .Branch }}-{{ .Revision }}
   images: &images
     docker:
-      - image: circleci/node:12
+      - image: circleci/node:16
       - image: circleci/postgres:9
         environment:
           POSTGRES_PASSWORD: password
