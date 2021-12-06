@@ -1,10 +1,19 @@
 import { URL } from "url";
 import { join } from "path";
+import { Dialect } from "sequelize";
+
+const namespace = "sequelize";
+
+declare module "actionhero" {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
 
 const databaseName = "ah_sequelize";
 
 export const DEFAULT = {
-  sequelize: (config) => {
+  [namespace]: (config) => {
     let dialect = "postgres";
     let host = process.env.DB_HOST || "127.0.0.1";
     let port = process.env.DB_PORT || "5432";
@@ -36,7 +45,7 @@ export const DEFAULT = {
     return {
       autoMigrate: true,
       logging: false,
-      dialect: dialect,
+      dialect: dialect as Dialect,
       port: parseInt(port),
       database: database,
       host: host,
