@@ -8,6 +8,7 @@ This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https:
 
 ## Notes
 
+- Versions `4.0.0+` of this package are only compatible with Actionhero versions `28.0.0+`, sequelize v6+ and sequelize-typescript v2+. Node.js v12+ is required.
 - Versions `3.0.0+` of this package are only compatible with Actionhero versions `24.0.0+`, sequelize v6+ and sequelize-typescript v2+. Node.js v10+ is required.
 - Versions `2.0.0+` of this package are only compatible with Actionhero versions `21.0.0+`.
 - Versions `1.0.0+` of this package are only compatible with Actionhero versions `18.0.0+`.
@@ -72,13 +73,28 @@ A `./src/config/sequelize.ts` will need to be created for your project. The exam
 ```javascript
 import { URL } from "url";
 import { join } from "path";
+import { Dialect } from "sequelize";
+
+const namespace = "sequelize";
+
+declare module "actionhero" {
+  export interface ActionheroConfigInterface {
+    [namespace]: ReturnType<typeof DEFAULT[typeof namespace]>;
+  }
+}
+
+const databaseName = "ah_sequelize";
 
 export const DEFAULT = {
-  sequelize: (config) => {
+  [namespace]: (config) => {
     let dialect = "postgres";
     let host = process.env.DB_HOST || "127.0.0.1";
     let port = process.env.DB_PORT || "5432";
-    let database = `app_${process.env.NODE_ENV || "development"}`;
+    let database =
+      process.env.DB_DATABASE ||
+      `${databaseName}_${config.process.env}${
+        process.env.JEST_WORKER_ID ? "_" + process.env.JEST_WORKER_ID : ""
+      }`;
     let username =
       process.env.DB_USER || process.env.CI ? "postgres" : undefined;
     let password = process.env.DB_PASS || undefined;
@@ -102,7 +118,7 @@ export const DEFAULT = {
     return {
       autoMigrate: true,
       logging: false,
-      dialect: dialect,
+      dialect: dialect as Dialect,
       port: parseInt(port),
       database: database,
       host: host,
@@ -112,6 +128,7 @@ export const DEFAULT = {
       migrations: [join(__dirname, "..", "migrations")],
       migrationLogLevel: "info",
       // you can also pass "dialectOptions", for example if you need `{ssl: true}` for Postgres
+
       // For Example, if you want to change the schema of a Postgres database away from "public", you would need to include the following configs:
       // schema: schema,
       // searchPath: schema,
@@ -139,8 +156,7 @@ module.exports.production = DEFAULT.sequelize({
 
 #### A Note about Postgres Schema changes
 
-The configuration above includes the 3 changes you need in your configuration to choose a non default (e.g.: `public`) schema for a Postgres database: `schema`, `searchPath`, and `dialectOptions`.  This package also includes the required code to patch your migrations (more on this below) to use the proper schema with no additional changes without any additional changes needed to your migrations or models.
-
+The configuration above includes the 3 changes you need in your configuration to choose a non default (e.g.: `public`) schema for a Postgres database: `schema`, `searchPath`, and `dialectOptions`. This package also includes the required code to patch your migrations (more on this below) to use the proper schema with no additional changes without any additional changes needed to your migrations or models.
 
 #### Configuring sequelize-cli
 
