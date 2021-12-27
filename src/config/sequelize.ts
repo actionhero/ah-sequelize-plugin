@@ -13,7 +13,7 @@ declare module "actionhero" {
 const databaseName = "ah_sequelize";
 
 export const DEFAULT = {
-  [namespace]: (config) => {
+  [namespace]: (config: Record<string, any>) => {
     let dialect = "postgres";
     let host = process.env.DB_HOST || "127.0.0.1";
     let port = process.env.DB_PORT || "5432";

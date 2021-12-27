@@ -1,10 +1,14 @@
-import { Umzug, SequelizeStorage } from "umzug";
+import { Umzug, SequelizeStorage, MigrationParams } from "umzug";
 import { Sequelize } from "sequelize-typescript";
 import * as path from "path";
 
 export namespace Migrations {
   export type SequelizeConfig = { [key: string]: any };
-  export type MigrationLogger = (message: string, severity: string) => void;
+  export type MigrationLogger = (
+    message: string,
+    severity: string,
+    data?: any
+  ) => void;
 
   export async function migrate(
     sequelizeConfig: SequelizeConfig,
@@ -27,6 +31,7 @@ export namespace Migrations {
   }
 
   export async function downAll(umzugs: Umzug[]) {
+    //@ts-ignore
     for (const umzug of umzugs) await umzug.down({ to: 0 });
   }
 
@@ -34,7 +39,7 @@ export namespace Migrations {
     for (const umzug of umzugs) {
       const pendingMigrations = await umzug.pending();
       if (pendingMigrations.length === 0) continue;
-      await umzug.up(pendingMigrations[0].file);
+      await umzug.up({ step: 1 });
       break;
     }
   }
@@ -43,7 +48,7 @@ export namespace Migrations {
     let found = false;
     for (const umzug of umzugs) {
       try {
-        await umzug.down(migrationName);
+        await umzug.down({ migrations: [migrationName] });
         found = true;
         break;
       } catch (error) {
@@ -67,37 +72,37 @@ export namespace Migrations {
     logLevel: string
   ) {
     const umzugs: Umzug[] = [];
-    const queryInterface = getInjectedQueryInterface(
-      sequelizeConfig,
-      sequelizeInstance
-    );
     (Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
       : [sequelizeConfig.migrations]
     ).forEach((dir) => {
       const umzug = new Umzug({
         storage: new SequelizeStorage({ sequelize: sequelizeInstance }),
+        context: sequelizeInstance.getQueryInterface(),
         migrations: {
-          params: [queryInterface, sequelizeInstance.constructor],
-          path: dir,
-          pattern: /(\.js|\w{3,}\.ts)$/, // this prevents .d.ts files from being loaded up
-          nameFormatter: (filename: string) => {
-            // we want to use only the base-name of the file, so the migrations are named the same in JS and TS
-            return path.parse(filename).name;
+          glob: `${dir}/*.{js,ts}`,
+          resolve: ({ path: filePath, context }) => {
+            const migration = require(filePath).default
+              ? require(filePath).default
+              : require(filePath);
+            return {
+              name: path.parse(filePath).name,
+              up: async () => migration.up(context, Sequelize),
+              down: async () => migration.down(context, Sequelize),
+            };
           },
         },
+        logger: null,
       });
 
-      function logUmzugEvent(eventName) {
-        return function (name, migration) {
-          logger(`[migration] ${name} ${eventName}`, logLevel);
-        };
+      function logUmzugEvent(name: string, eventName: string) {
+        logger(`[migration] ${name} ${eventName}`, logLevel);
       }
 
-      umzug.on("migrating", logUmzugEvent("migrating"));
-      umzug.on("migrated", logUmzugEvent("migrated"));
-      umzug.on("reverting", logUmzugEvent("reverting"));
-      umzug.on("reverted", logUmzugEvent("reverted"));
+      umzug.on("migrating", (ev) => logUmzugEvent(ev.name, "migrating"));
+      umzug.on("migrated", (ev) => logUmzugEvent(ev.name, "migrated"));
+      umzug.on("reverting", (ev) => logUmzugEvent(ev.name, "reverting"));
+      umzug.on("reverted", (ev) => logUmzugEvent(ev.name, "reverted"));
 
       umzugs.push(umzug);
     });
@@ -132,7 +137,7 @@ export namespace Migrations {
     return queryInterface;
   }
 
-  export function injectSchema(original, schema) {
+  export function injectSchema(original: Function, schema: string) {
     return function () {
       if (typeof arguments[0] === "string") {
         arguments[0] = { tableName: arguments[0], schema };

@@ -7,11 +7,11 @@ import {
   BeforeCreate,
   BelongsTo,
 } from "sequelize-typescript";
-import * as uuid from "uuid/v4";
+import * as uuid from "uuid";
 import { User } from "./User";
 
 @Table({ tableName: "posts", paranoid: true })
-export class Post extends Model<Post> {
+export class Post extends Model {
   @Column({ primaryKey: true })
   guid: string;
 
@@ -32,9 +32,9 @@ export class Post extends Model<Post> {
   user: User;
 
   @BeforeCreate
-  static generateGuid(instance) {
+  static generateGuid(instance: Post) {
     if (!instance.guid) {
-      instance.guid = uuid();
+      instance.guid = uuid.v4();
     }
   }
 }

@@ -46,8 +46,8 @@ export const DEFAULT = {
     "allowJs": true,
     "module": "commonjs",
     "target": "es2018",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "experimentalDecorators": true, // <-- required
+    "emitDecoratorMetadata": true // <-- required
   },
   "include": ["./src/**/*"]
 }
