@@ -1,4 +1,4 @@
-import { Umzug, SequelizeStorage, MigrationParams } from "umzug";
+import { Umzug, SequelizeStorage } from "umzug";
 import { Sequelize } from "sequelize-typescript";
 import * as path from "path";
 
@@ -80,7 +80,7 @@ export namespace Migrations {
         storage: new SequelizeStorage({ sequelize: sequelizeInstance }),
         context: sequelizeInstance.getQueryInterface(),
         migrations: {
-          glob: `${dir}/*.{js,ts}`,
+          glob: ["*.{js,ts}", { cwd: dir, ignore: "**/*.d.ts" }],
           resolve: ({ path: filePath, context }) => {
             const migration = require(filePath).default
               ? require(filePath).default
