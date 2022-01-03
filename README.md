@@ -282,24 +282,20 @@ You can then use these models in your Actions, Tasks, etc, by simply requiring t
 ```ts
 // from actions/user.ts
 
-import { Action } from "actionhero";
+import { Action, ParamsFrom } from "actionhero";
 import { User } from "./../models/User";
 
 export class UserCreate extends Action {
-  constructor() {
-    super();
-    this.name = "user:create";
-    this.description = "create a new user";
-    this.outputExample = {};
-    this.inputs = {
-      firstName: { required: true },
-      lastName: { required: true },
-      password: { required: true },
-      email: { required: true },
-    };
-  }
+  name = "user:create";
+  description = "create a new user";
+  inputs = {
+    firstName: { required: true },
+    lastName: { required: true },
+    password: { required: true },
+    email: { required: true },
+  };
 
-  async run({ params, response }) {
+  async run({ params }: {params: ParamsFrom<UserCreate>) {
     const user = new User({
       firstName: params.firstName,
       lastName: params.lastName,
@@ -307,7 +303,7 @@ export class UserCreate extends Action {
     });
     await user.save();
     await user.updatePassword(params.password);
-    response.userGuid = user.guid;
+    return { userId: user.id }
   }
 }
 ```
@@ -321,9 +317,14 @@ An example migration to create a `users` table would look like:
 ```ts
 // from ./migrations/0000001-createUsersTable.ts
 
-module.exports = {
-  up: async function (migration, DataTypes) {
-    await migration.createTable(
+import * as Sequelzie from "sequelize";
+
+export default {
+  up: async function (
+    queryInterface: Sequelzie.QueryInterface,
+    DataTypes: typeof Sequelzie
+  ) {
+    await queryInterface.createTable(
       "users",
       {
         guid: {
@@ -366,14 +367,14 @@ module.exports = {
       }
     );
 
-    await migration.addIndex("users", ["email"], {
+    await queryInterface.addIndex("users", ["email"], {
       unique: true,
-      fields: "email",
+      fields: ["email"],
     });
   },
 
-  down: async function (migration) {
-    await migration.dropTable("users");
+  down: async function (queryInterface: Sequelzie.QueryInterface) {
+    await queryInterface.dropTable("users");
   },
 };
 ```
