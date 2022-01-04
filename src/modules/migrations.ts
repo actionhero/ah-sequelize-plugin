@@ -1,5 +1,5 @@
 import { Umzug, SequelizeStorage } from "umzug";
-import { Sequelize } from "sequelize-typescript";
+import { Sequelize } from "sequelize";
 import * as path from "path";
 
 export namespace Migrations {
