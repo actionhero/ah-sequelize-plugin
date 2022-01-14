@@ -111,21 +111,35 @@ export namespace Migrations {
       //   database to match the migration names.
       // We are doing the name update in JS rather than SQL to avoid dialect-specific commands.
       const model = context.sequelize.models.SequelizeMeta;
-      const rows = await model.findAll({
-        where: {
-          name: { [Op.or]: [{ [Op.like]: "%.js" }, { [Op.like]: "%.ts" }] },
-        },
-      });
+      let metaTableExists = false;
+      try {
+        await model.findOne();
+        metaTableExists = true;
+      } catch (error) {
+        if (error.name === "SequelizeDatabaseError") {
+          // it's ok, the table doesn't exist yet
+        } else {
+          throw error;
+        }
+      }
 
-      for (const row of rows) {
-        // @ts-ignore
-        const oldName: string = row.name;
-        const newName = oldName.replace(/\.ts$/, "").replace(/\.js$/, "");
-        await model.update({ name: newName }, { where: { name: oldName } });
-        logger(
-          `[migration] renamed migration '${oldName}' to '${newName}'`,
-          logLevel
-        );
+      if (metaTableExists) {
+        const rows = await model.findAll({
+          where: {
+            name: { [Op.or]: [{ [Op.like]: "%.js" }, { [Op.like]: "%.ts" }] },
+          },
+        });
+
+        for (const row of rows) {
+          // @ts-ignore
+          const oldName: string = row.name;
+          const newName = oldName.replace(/\.ts$/, "").replace(/\.js$/, "");
+          await model.update({ name: newName }, { where: { name: oldName } });
+          logger(
+            `[migration] renamed migration '${oldName}' to '${newName}'`,
+            logLevel
+          );
+        }
       }
 
       umzugs.push(umzug);

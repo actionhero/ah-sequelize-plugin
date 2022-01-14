@@ -46,7 +46,7 @@ jobs:
           command: npm run lint
       - run:
           name: test
-          command: ./node_modules/.bin/jest --ci
+          command: ./node_modules/.bin/jest --ci --forceExit
 
 workflows:
   version: 2
