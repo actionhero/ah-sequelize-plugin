@@ -1,5 +1,5 @@
 import { Umzug, SequelizeStorage } from "umzug";
-import { Sequelize } from "sequelize";
+import { Sequelize, Op } from "sequelize";
 import * as path from "path";
 
 export namespace Migrations {
@@ -17,7 +17,7 @@ export namespace Migrations {
     logLevel: string
   ) {
     logger("running sequelize migrations", "debug");
-    const umzugs = importMigrationsFromDirectory(
+    const umzugs = await importMigrationsFromDirectory(
       sequelizeConfig,
       sequelizeInstance,
       logger,
@@ -65,20 +65,21 @@ export namespace Migrations {
     }
   }
 
-  export function importMigrationsFromDirectory(
+  export async function importMigrationsFromDirectory(
     sequelizeConfig: SequelizeConfig,
     sequelizeInstance: Sequelize,
     logger: MigrationLogger,
     logLevel: string
   ) {
     const umzugs: Umzug[] = [];
-    (Array.isArray(sequelizeConfig.migrations)
+    for (const dir in Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
-      : [sequelizeConfig.migrations]
-    ).forEach((dir) => {
+      : [sequelizeConfig.migrations]) {
+      const context = sequelizeInstance.getQueryInterface();
+
       const umzug = new Umzug({
         storage: new SequelizeStorage({ sequelize: sequelizeInstance }),
-        context: sequelizeInstance.getQueryInterface(),
+        context,
         migrations: {
           glob: ["*.{js,ts}", { cwd: dir, ignore: "**/*.d.ts" }],
           resolve: ({ path: filePath, context }) => {
@@ -104,8 +105,32 @@ export namespace Migrations {
       umzug.on("reverting", (ev) => logUmzugEvent(ev.name, "reverting"));
       umzug.on("reverted", (ev) => logUmzugEvent(ev.name, "reverted"));
 
+      // Older versions of Umzug would have allowed .ts and .js names in the migration
+      //   and silently matched them. Now, we need to remove the filename prefixes in the
+      //   database to match the migration names.
+      // We are doing the name update in JS rather than SQL to avoid dialect-specific commands.
+      const rows = await context.sequelize.models.SequelizeMeta.findAll({
+        where: {
+          name: { [Op.or]: [{ [Op.like]: "%.js" }, { [Op.like]: "%.ts" }] },
+        },
+      });
+
+      for (const row of rows) {
+        // @ts-ignore
+        const oldName: string = row.name;
+        const newName = oldName.replace(/\.ts$/, "").replace(/\.js$/, "");
+        await context.sequelize.models.SequelizeMeta.update(
+          { name: newName },
+          { where: { name: oldName } }
+        );
+        logger(
+          `[migration] renamed migration '${oldName}' to '${newName}'`,
+          logLevel
+        );
+      }
+
       umzugs.push(umzug);
-    });
+    }
 
     return umzugs;
   }
