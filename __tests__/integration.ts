@@ -7,8 +7,13 @@ describe("ah-sequelize-plugin", function () {
   const actionhero = new Process();
 
   beforeAll(async () => {
-    await actionhero.start();
-    await truncate([User, Post]);
+    try {
+      await actionhero.start();
+      await truncate([User, Post]);
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
   });
 
   afterAll(async () => await actionhero.stop());
