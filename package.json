@@ -3,7 +3,7 @@
   "name": "ah-sequelize-plugin",
   "license": "Apache-2.0",
   "description": "Use Sequelize in ActionHero",
-  "version": "5.0.2",
+  "version": "5.1.0",
   "homepage": "http://actionherojs.com",
   "repository": {
     "type": "git",
