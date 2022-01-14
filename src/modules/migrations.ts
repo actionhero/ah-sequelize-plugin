@@ -72,7 +72,7 @@ export namespace Migrations {
     logLevel: string
   ) {
     const umzugs: Umzug[] = [];
-    for (const dir in Array.isArray(sequelizeConfig.migrations)
+    for (const dir of Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
       : [sequelizeConfig.migrations]) {
       const context = sequelizeInstance.getQueryInterface();
@@ -109,7 +109,8 @@ export namespace Migrations {
       //   and silently matched them. Now, we need to remove the filename prefixes in the
       //   database to match the migration names.
       // We are doing the name update in JS rather than SQL to avoid dialect-specific commands.
-      const rows = await context.sequelize.models.SequelizeMeta.findAll({
+      const model = context.sequelize.models.SequelizeMeta;
+      const rows = await model.findAll({
         where: {
           name: { [Op.or]: [{ [Op.like]: "%.js" }, { [Op.like]: "%.ts" }] },
         },
@@ -119,10 +120,7 @@ export namespace Migrations {
         // @ts-ignore
         const oldName: string = row.name;
         const newName = oldName.replace(/\.ts$/, "").replace(/\.js$/, "");
-        await context.sequelize.models.SequelizeMeta.update(
-          { name: newName },
-          { where: { name: oldName } }
-        );
+        await model.update({ name: newName }, { where: { name: oldName } });
         logger(
           `[migration] renamed migration '${oldName}' to '${newName}'`,
           logLevel
