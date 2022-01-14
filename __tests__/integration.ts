@@ -138,4 +138,29 @@ describe("ah-sequelize-plugin", function () {
     const count = await User.count();
     expect(count).toBe(0);
   });
+
+  describe("migration name update", () => {
+    beforeAll(async () => {
+      await api.sequelize.query(
+        "INSERT INTO \"SequelizeMeta\" (\"name\") VALUES ('0003-js-test.js'), ('0004-ts-test.ts')"
+      );
+      await actionhero.restart();
+    });
+
+    afterAll(async () => {
+      await api.sequelize.query(
+        "DELETE FROM \"SequelizeMeta\" WHERE \"name\" IN ('0003-js-test.js', '0004-ts-test.ts', '0003-js-test', '0004-ts-test')"
+      );
+    });
+
+    test("migration names with file extensions are fixed", async () => {
+      const [rows] = await api.sequelize.query('SELECT * FROM "SequelizeMeta"');
+      expect(rows).toEqual([
+        { name: "0001-createUsersTable" },
+        { name: "0002-createPostsTable" },
+        { name: "0003-js-test" },
+        { name: "0004-ts-test" },
+      ]);
+    });
+  });
 });

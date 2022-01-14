@@ -71,10 +71,11 @@ export namespace Migrations {
     logger: MigrationLogger,
     logLevel: string
   ) {
-    const umzugs: Umzug[] = [];
-    for (const dir of Array.isArray(sequelizeConfig.migrations)
+    const dirs: string[] = Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
-      : [sequelizeConfig.migrations]) {
+      : [sequelizeConfig.migrations];
+    const umzugs: Umzug[] = [];
+    for (const dir of dirs) {
       const context = sequelizeInstance.getQueryInterface();
 
       const umzug = new Umzug({
