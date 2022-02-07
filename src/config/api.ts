@@ -26,7 +26,7 @@ export const DEFAULT = {
       id: undefined as string,
       welcomeMessage: `Welcome to the ${packageJSON.name} api`,
       // A unique token to your application that servers will use to authenticate to each other
-      serverToken: "change-me",
+      serverToken: process.env.SERVER_TOKEN ?? "change-me",
       // the redis prefix for Actionhero cache objects
       cachePrefix: "actionhero:cache:",
       // the redis prefix for Actionhero cache/lock objects
