@@ -135,42 +135,4 @@ export namespace Migrations {
 
     return umzugs;
   }
-
-  export function getInjectedQueryInterface(
-    sequelizeConfig: SequelizeConfig,
-    sequelizeInstance: Sequelize
-  ) {
-    const queryInterface = sequelizeInstance.getQueryInterface();
-    if (
-      sequelizeConfig.schema &&
-      sequelizeConfig.schema !== "public" &&
-      sequelizeConfig.dialect &&
-      sequelizeConfig.dialect === "postgres"
-    ) {
-      queryInterface.addColumn = injectSchema(
-        queryInterface.addColumn,
-        sequelizeConfig.schema
-      );
-      queryInterface.removeColumn = injectSchema(
-        queryInterface.removeColumn,
-        sequelizeConfig.schema
-      );
-      queryInterface.renameColumn = injectSchema(
-        queryInterface.renameColumn,
-        sequelizeConfig.schema
-      );
-    }
-    return queryInterface;
-  }
-
-  export function injectSchema(original: Function, schema: string) {
-    return function () {
-      if (typeof arguments[0] === "string") {
-        arguments[0] = { tableName: arguments[0], schema };
-      } else if (!arguments[0].schema) {
-        arguments[0].schema = schema;
-      }
-      return original.apply(this, arguments);
-    };
-  }
 }
