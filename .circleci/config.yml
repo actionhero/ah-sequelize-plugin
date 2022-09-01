@@ -6,7 +6,7 @@ references:
   images: &images
     docker:
       - image: cimg/node:18.8.0
-      - image: cimg/postgres:14.4.0
+      - image: cimg/postgres:14.4
         environment:
           POSTGRES_PASSWORD: password
       - image: redis:5
