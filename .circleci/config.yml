@@ -5,8 +5,8 @@ references:
     key: package-cache-{{ .Branch }}-{{ .Revision }}
   images: &images
     docker:
-      - image: cimg/node:16
-      - image: cimg/postgres:12
+      - image: cimg/node:18
+      - image: cimg/postgres:14
         environment:
           POSTGRES_PASSWORD: password
       - image: redis:5
