@@ -4,7 +4,7 @@
 
 [![CircleCI](https://circleci.com/gh/actionhero/ah-sequelize-plugin.svg?style=svg)](https://circleci.com/gh/actionhero/ah-sequelize-plugin)
 
-This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https://www.actionherojs.com). It handles running migrations and connecting your models. Under the hood, we use [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) and [Uzmug](https://github.com/sequelize/umzug)
+This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https://www.actionherojs.com). It handles running migrations and connecting your models. Under the hood, we use [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) and [Umzug](https://github.com/sequelize/umzug)
 
 ## Notes
 
@@ -317,12 +317,12 @@ An example migration to create a `users` table would look like:
 ```ts
 // from ./migrations/0000001-createUsersTable.ts
 
-import * as Sequelzie from "sequelize";
+import * as Sequelize from "sequelize";
 
 export default {
   up: async function (
-    queryInterface: Sequelzie.QueryInterface,
-    DataTypes: typeof Sequelzie
+    queryInterface: Sequelize.QueryInterface,
+    DataTypes: typeof Sequelize
   ) {
     await queryInterface.createTable(
       "users",
@@ -373,7 +373,7 @@ export default {
     });
   },
 
-  down: async function (queryInterface: Sequelzie.QueryInterface) {
+  down: async function (queryInterface: Sequelize.QueryInterface) {
     await queryInterface.dropTable("users");
   },
 };
