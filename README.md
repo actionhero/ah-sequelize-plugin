@@ -4,7 +4,7 @@
 
 [![CircleCI](https://circleci.com/gh/actionhero/ah-sequelize-plugin.svg?style=svg)](https://circleci.com/gh/actionhero/ah-sequelize-plugin)
 
-This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https://www.actionherojs.com). It handles running migrations and connecting your models. Under the hood, we use [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) and [Uzmug](https://github.com/sequelize/umzug)
+This plugin connects [Sequelize](https://sequelize.org/) and [Actionhero](https://www.actionherojs.com). It handles running migrations and connecting your models. Under the hood, we use [sequelize-typescript](https://github.com/RobinBuschmann/sequelize-typescript) and [Umzug](https://github.com/sequelize/umzug)
 
 ## Notes
 
