@@ -27,7 +27,7 @@ export class SequelizeInitializer extends Initializer {
           config.sequelize,
           api.sequelize,
           log,
-          config.sequelize.migrationLogLevel
+          config.sequelize.migrationLogLevel,
         );
       });
     } else {
