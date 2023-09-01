@@ -3,7 +3,7 @@ import * as Sequelzie from "sequelize";
 export default {
   up: async function (
     queryInterface: Sequelzie.QueryInterface,
-    DataTypes: typeof Sequelzie
+    DataTypes: typeof Sequelzie,
   ) {
     await queryInterface.createTable(
       "posts",
@@ -35,7 +35,7 @@ export default {
       },
       {
         charset: "utf8mb4",
-      }
+      },
     );
 
     await queryInterface.addIndex("posts", ["authorGuid", "title"], {

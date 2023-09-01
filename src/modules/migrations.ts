@@ -7,21 +7,21 @@ export namespace Migrations {
   export type MigrationLogger = (
     message: string,
     severity: string,
-    data?: any
+    data?: any,
   ) => void;
 
   export async function migrate(
     sequelizeConfig: SequelizeConfig,
     sequelizeInstance: Sequelize,
     logger: MigrationLogger,
-    logLevel: string
+    logLevel: string,
   ) {
     logger("running sequelize migrations", "debug");
     const umzugs = await importMigrationsFromDirectory(
       sequelizeConfig,
       sequelizeInstance,
       logger,
-      logLevel
+      logLevel,
     );
     await upAll(umzugs);
   }
@@ -60,7 +60,7 @@ export namespace Migrations {
 
     if (!found) {
       throw new Error(
-        `could not find migration \`${migrationName}\` in the migration directories`
+        `could not find migration \`${migrationName}\` in the migration directories`,
       );
     }
   }
@@ -69,7 +69,7 @@ export namespace Migrations {
     sequelizeConfig: SequelizeConfig,
     sequelizeInstance: Sequelize,
     logger: MigrationLogger,
-    logLevel: string
+    logLevel: string,
   ) {
     const dirs: string[] = Array.isArray(sequelizeConfig.migrations)
       ? sequelizeConfig.migrations
@@ -126,7 +126,7 @@ export namespace Migrations {
         await model.update({ name: newName }, { where: { name: oldName } });
         logger(
           `[migration] renamed migration '${oldName}' to '${newName}'`,
-          logLevel
+          logLevel,
         );
       }
 
